@@ -55,7 +55,7 @@ export function KrishiMap({ selectedId, language, onSelect }: KrishiMapProps) {
 
   return (
     <div className="relative h-full min-h-[100svh] w-full overflow-hidden bg-background">
-      <MapContainer center={[12.32, 76.62]} zoom={10} minZoom={8} maxZoom={15} zoomControl className="z-0 h-full w-full">
+      <MapContainer center={[12.32, 76.62]} zoom={10} minZoom={8} maxZoom={15} zoomControl className="absolute inset-0 z-0 h-full w-full">
         <TileLayer
           attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
           eventHandlers={{
@@ -72,7 +72,7 @@ export function KrishiMap({ selectedId, language, onSelect }: KrishiMapProps) {
               setMapError(true);
             },
           }}
-          url="https://tile.openstreetmap.org/{z}/{x}/{y}.png"
+          url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
         />
         <FocusRegion selectedId={selectedId} />
         {markers.map(({ id, region, icon }) => (
@@ -86,7 +86,7 @@ export function KrishiMap({ selectedId, language, onSelect }: KrishiMapProps) {
 
       {isLoadingTiles && !mapError && (
         <div className="pointer-events-none absolute inset-0 z-[700] flex items-center justify-center bg-background/60 backdrop-blur-sm">
-          <div className="rounded-lg border border-glass-border bg-glass/92 px-5 py-4 text-center text-glass-foreground shadow-glass dark:bg-glass/82">
+          <div className="rounded-lg border border-glass-border bg-glass/92 px-5 py-4 text-center text-glass-foreground shadow-glass">
             <div className="mx-auto mb-3 size-9 animate-spin rounded-full border-2 border-primary border-t-transparent" />
             <p className="text-sm font-bold">Loading Mysuru map…</p>
           </div>
