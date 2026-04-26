@@ -3,7 +3,6 @@ import { Button } from "@/components/ui/button";
 import { Language, Region, uiLabels } from "@/data/krishiMysuru";
 
 const phPosition = (ph: number) => `${Math.min(100, Math.max(0, ((ph - 4) / 6) * 100))}%`;
-
 const cropScores = [94, 88, 82, 79];
 
 export function FieldIntelligencePanel({ region, language }: { region: Region; language: Language }) {
@@ -32,17 +31,15 @@ export function FieldIntelligencePanel({ region, language }: { region: Region; l
       )}
 
       <div className="rounded-lg border border-glass-border bg-background/12 p-4">
-        <div className="mb-3 flex items-center justify-between text-sm font-semibold">
+        <div className="mb-3 flex items-center justify-between gap-3 text-sm font-semibold">
           <span>{labels.soil}</span>
-          <span className="text-glass-foreground/78">{localized.soil}</span>
+          <span className="text-right text-glass-foreground/78">{localized.soil}</span>
         </div>
         <div className="relative h-4 rounded-full bg-gradient-to-r from-warning via-success to-accent">
           <div className="absolute -top-2 h-8 w-1 rounded-full bg-glass-foreground shadow-control" style={{ left: phPosition(region.ph) }} />
         </div>
         <div className="mt-2 flex justify-between text-[11px] font-semibold text-glass-foreground/62">
-          <span>Acidic</span>
-          <span>Neutral</span>
-          <span>Alkaline</span>
+          <span>Acidic</span><span>Neutral</span><span>Alkaline</span>
         </div>
       </div>
 
@@ -76,25 +73,17 @@ export function FieldIntelligencePanel({ region, language }: { region: Region; l
         <div className="grid gap-3">
           {localized.crops.map((crop, index) => (
             <div key={crop} className="flex items-center justify-between rounded-lg border border-glass-border bg-background/12 p-3 transition-transform hover:translate-x-1">
-              <div className="flex items-center gap-3">
-                <div className="flex size-10 items-center justify-center rounded-md bg-primary/18 text-primary">
-                  <Sprout className="size-5" />
-                </div>
-                <span className="font-semibold">{crop}</span>
+              <div className="flex min-w-0 items-center gap-3">
+                <div className="flex size-10 shrink-0 items-center justify-center rounded-md bg-primary/18 text-primary"><Sprout className="size-5" /></div>
+                <span className="truncate font-semibold">{crop}</span>
               </div>
-              <div className="flex items-center gap-2 text-sm font-bold text-accent">
-                <TrendingUp className="size-4" />
-                {cropScores[index] ?? 76}%
-              </div>
+              <div className="flex shrink-0 items-center gap-2 text-sm font-bold text-accent"><TrendingUp className="size-4" />{cropScores[index] ?? 76}%</div>
             </div>
           ))}
         </div>
       </div>
 
-      <Button variant="field" className="mt-5 w-full">
-        <Phone className="size-4" />
-        {labels.call}
-      </Button>
+      <Button variant="field" className="mt-5 w-full"><Phone className="size-4" />{labels.call}</Button>
     </aside>
   );
 }
