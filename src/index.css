@@ -47,7 +47,7 @@ All colors MUST be HSL.
     --warning-foreground: 0 0% 100%;
     --success: 133 46% 42%;
     --success-foreground: 0 0% 100%;
-    --map-filter: saturate(1.06) contrast(0.98) brightness(1.03);
+    --map-filter: saturate(1.08) contrast(0.98) brightness(1.04);
     --shadow-glass: 0 24px 80px -30px hsl(151 31% 6% / 0.34);
     --shadow-control: 0 16px 38px -26px hsl(151 31% 6% / 0.28);
     --shadow-marker: 0 10px 22px -8px hsl(151 31% 6% / 0.65);
@@ -69,54 +69,6 @@ All colors MUST be HSL.
     --sidebar-ring: 217.2 91.2% 59.8%;
   }
 
-  .dark {
-    --background: 154 33% 7%;
-    --foreground: 82 48% 96%;
-
-    --card: 154 26% 11%;
-    --card-foreground: 82 48% 96%;
-
-    --popover: 154 26% 11%;
-    --popover-foreground: 82 48% 96%;
-
-    --primary: 82 58% 58%;
-    --primary-foreground: 154 33% 7%;
-
-    --secondary: 157 22% 18%;
-    --secondary-foreground: 82 48% 96%;
-
-    --muted: 157 22% 18%;
-    --muted-foreground: 87 16% 72%;
-
-    --accent: 39 92% 58%;
-    --accent-foreground: 154 33% 7%;
-
-    --destructive: 4 78% 54%;
-    --destructive-foreground: 0 0% 100%;
-
-    --border: 157 18% 24%;
-    --input: 157 18% 24%;
-    --ring: 82 58% 58%;
-    --glass: 154 33% 7%;
-    --glass-foreground: 82 48% 96%;
-    --glass-border: 82 48% 96% / 0.16;
-    --warning: 4 78% 54%;
-    --warning-foreground: 0 0% 100%;
-    --success: 133 46% 48%;
-    --success-foreground: 154 33% 7%;
-    --map-filter: saturate(0.92) contrast(1.08) brightness(0.74) hue-rotate(8deg);
-    --shadow-glass: 0 28px 90px -30px hsl(0 0% 0% / 0.85);
-    --shadow-control: 0 18px 42px -26px hsl(0 0% 0% / 0.8);
-    --shadow-marker: 0 12px 26px -8px hsl(0 0% 0% / 0.8);
-    --sidebar-background: 240 5.9% 10%;
-    --sidebar-foreground: 240 4.8% 95.9%;
-    --sidebar-primary: 224.3 76.3% 48%;
-    --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 240 3.7% 15.9%;
-    --sidebar-accent-foreground: 240 4.8% 95.9%;
-    --sidebar-border: 240 3.7% 15.9%;
-    --sidebar-ring: 217.2 91.2% 59.8%;
-  }
 }
 
 @layer base {
@@ -131,6 +83,8 @@ All colors MUST be HSL.
 
 @layer components {
   .leaflet-container {
+    position: absolute !important;
+    inset: 0;
     height: 100% !important;
     min-height: 100svh;
     width: 100% !important;
