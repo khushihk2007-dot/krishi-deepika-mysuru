@@ -47,6 +47,19 @@ export default {
           DEFAULT: "hsl(var(--card))",
           foreground: "hsl(var(--card-foreground))",
         },
+        glass: {
+          DEFAULT: "hsl(var(--glass))",
+          foreground: "hsl(var(--glass-foreground))",
+          border: "hsl(var(--glass-border))",
+        },
+        warning: {
+          DEFAULT: "hsl(var(--warning))",
+          foreground: "hsl(var(--warning-foreground))",
+        },
+        success: {
+          DEFAULT: "hsl(var(--success))",
+          foreground: "hsl(var(--success-foreground))",
+        },
         sidebar: {
           DEFAULT: "hsl(var(--sidebar-background))",
           foreground: "hsl(var(--sidebar-foreground))",
@@ -62,6 +75,10 @@ export default {
         lg: "var(--radius)",
         md: "calc(var(--radius) - 2px)",
         sm: "calc(var(--radius) - 4px)",
+      },
+      fontFamily: {
+        display: ["Inter", "ui-sans-serif", "system-ui", "sans-serif"],
+        body: ["Inter", "ui-sans-serif", "system-ui", "sans-serif"],
       },
       keyframes: {
         "accordion-down": {
@@ -80,10 +97,33 @@ export default {
             height: "0",
           },
         },
+        "panel-in": {
+          from: { opacity: "0", transform: "translateX(24px)" },
+          to: { opacity: "1", transform: "translateX(0)" },
+        },
+        "sheet-in": {
+          from: { opacity: "0", transform: "translateY(28px)" },
+          to: { opacity: "1", transform: "translateY(0)" },
+        },
+        "pin-pulse": {
+          "0%, 100%": { transform: "scale(1)", opacity: "0.35" },
+          "50%": { transform: "scale(1.9)", opacity: "0" },
+        },
       },
       animation: {
         "accordion-down": "accordion-down 0.2s ease-out",
         "accordion-up": "accordion-up 0.2s ease-out",
+        "panel-in": "panel-in 0.45s cubic-bezier(0.22, 1, 0.36, 1)",
+        "sheet-in": "sheet-in 0.45s cubic-bezier(0.22, 1, 0.36, 1)",
+        "pin-pulse": "pin-pulse 1.8s ease-out infinite",
+      },
+      boxShadow: {
+        glass: "var(--shadow-glass)",
+        control: "var(--shadow-control)",
+        marker: "var(--shadow-marker)",
+      },
+      backdropBlur: {
+        panel: "18px",
       },
     },
   },
