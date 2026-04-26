@@ -40,16 +40,16 @@ All colors MUST be HSL.
 
     --radius: 0.75rem;
 
-    --glass: 151 31% 12%;
-    --glass-foreground: 82 48% 96%;
-    --glass-border: 92 38% 98% / 0.18;
+    --glass: 92 38% 98%;
+    --glass-foreground: 151 31% 12%;
+    --glass-border: 151 31% 12% / 0.14;
     --warning: 4 78% 50%;
     --warning-foreground: 0 0% 100%;
     --success: 133 46% 42%;
     --success-foreground: 0 0% 100%;
     --map-filter: saturate(1.06) contrast(0.98) brightness(1.03);
-    --shadow-glass: 0 24px 80px -28px hsl(151 31% 6% / 0.65);
-    --shadow-control: 0 16px 38px -24px hsl(151 31% 6% / 0.55);
+    --shadow-glass: 0 24px 80px -30px hsl(151 31% 6% / 0.34);
+    --shadow-control: 0 16px 38px -26px hsl(151 31% 6% / 0.28);
     --shadow-marker: 0 10px 22px -8px hsl(151 31% 6% / 0.65);
 
     --sidebar-background: 0 0% 98%;
@@ -131,8 +131,10 @@ All colors MUST be HSL.
 
 @layer components {
   .leaflet-container {
-    height: 100%;
-    width: 100%;
+    position: absolute;
+    inset: 0;
+    height: 100vh;
+    width: 100vw;
     background: hsl(var(--background));
     font-family: inherit;
   }
