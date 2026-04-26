@@ -1,4 +1,4 @@
-import { useMemo } from "react";
+import { useEffect, useMemo } from "react";
 import { DivIcon } from "leaflet";
 import { MapContainer, Marker, TileLayer, Tooltip, useMap } from "react-leaflet";
 import { Language, RegionId, regionEntries } from "@/data/krishiMysuru";
@@ -12,7 +12,11 @@ type KrishiMapProps = {
 function FocusRegion({ selectedId }: { selectedId: RegionId }) {
   const map = useMap();
   const [, region] = regionEntries.find(([id]) => id === selectedId) ?? regionEntries[0];
-  map.flyTo([region.lat, region.lng], selectedId === "gokulam" ? 12 : 11, { duration: 1.1, easeLinearity: 0.25 });
+
+  useEffect(() => {
+    map.flyTo([region.lat, region.lng], selectedId === "gokulam" ? 12 : 11, { duration: 1.1, easeLinearity: 0.25 });
+  }, [map, region.lat, region.lng, selectedId]);
+
   return null;
 }
 
