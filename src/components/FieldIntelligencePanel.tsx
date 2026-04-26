@@ -11,7 +11,7 @@ export function FieldIntelligencePanel({ region, language }: { region: Region; l
   const isAcidic = region.ph < 6;
 
   return (
-    <aside className="fixed bottom-0 left-0 right-0 z-[900] max-h-[58vh] overflow-y-auto rounded-t-lg border border-glass-border bg-glass/82 p-4 text-glass-foreground shadow-glass backdrop-blur-panel animate-sheet-in md:bottom-6 md:left-auto md:right-6 md:top-24 md:max-h-[calc(100vh-7.5rem)] md:w-[390px] md:rounded-lg md:p-5 md:animate-panel-in">
+    <aside className="fixed bottom-0 left-0 right-0 z-[900] max-h-[58vh] overflow-y-auto rounded-t-lg border border-glass-border bg-glass/92 p-4 text-glass-foreground shadow-glass backdrop-blur-panel animate-sheet-in dark:bg-glass/82 md:bottom-6 md:left-auto md:right-6 md:top-24 md:max-h-[calc(100vh-7.5rem)] md:w-[390px] md:rounded-lg md:p-5 md:animate-panel-in">
       <div className="mb-5 flex items-start justify-between gap-4">
         <div>
           <p className="text-xs font-semibold uppercase tracking-[0.18em] text-glass-foreground/65">{labels.health}</p>
