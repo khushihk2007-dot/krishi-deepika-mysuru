@@ -115,7 +115,55 @@ const Index = () => {
 
       {role === "home" && <section className="mx-auto grid max-w-7xl gap-6 px-4 py-6 md:grid-cols-[1.1fr_0.9fr] md:py-10"><div className="rounded-[2rem] border border-glass-border bg-gradient-to-br from-card via-secondary/45 to-background p-6 shadow-glass md:p-10"><div className="mb-5 inline-flex items-center gap-2 rounded-full bg-secondary/60 px-4 py-2 text-sm font-black"><Globe2 className="size-4" /> EN · ಕನ್ನಡ · हिंदी</div><h1 className="font-display text-4xl font-black leading-tight md:text-6xl">{t.hero}</h1><p className="mt-4 max-w-2xl text-lg font-semibold text-muted-foreground">{t.sub}</p><div className="mt-7">{roleButtons}</div></div><div className="grid gap-4">{t.stats.map((stat) => <Card key={stat} title={stat} icon="🌾"><p className="text-sm font-bold text-muted-foreground">Live demand signal for Mysuru farmers</p></Card>)}<Button variant="secondaryFarm" className="h-14 rounded-full text-base font-black"><Mic />{t.voice}</Button></div></section>}
 
-      {role === "farmer" && <section className="mx-auto max-w-7xl px-4 py-5"><div className="mb-4 flex gap-2 overflow-x-auto pb-2">{(Object.keys(t.tabs) as FarmerTab[]).map((tab) => <Button key={tab} variant={farmerTab === tab ? "field" : "glass"} className="rounded-full" onClick={() => setFarmerTab(tab)}>{tab === "field" && <Map />}{t.tabs[tab]}</Button>)}</div>{farmerTab === "field" ? <div className="relative h-[calc(100svh-9.5rem)] min-h-[560px] overflow-hidden rounded-[2rem] border border-glass-border shadow-glass"><KrishiMap selectedId={selectedId} language={language} onSelect={setSelectedId} /><div className="absolute left-4 top-4 z-[850] rounded-[1.25rem] border border-glass-border bg-glass/92 p-4 shadow-control backdrop-blur-panel"><p className="text-xs font-black uppercase text-muted-foreground">Live Field</p><p className="font-display text-xl font-black">{selectedContent.name}</p><p className="text-sm font-bold text-muted-foreground">{selectedContent.soil}</p></div><FieldIntelligencePanel region={selectedRegion} regionId={selectedId} language={language} /></div> : <div className="grid gap-4 lg:grid-cols-3"><Card title={t.demand} icon="🌱"><div className="grid gap-3">{demandCrops.map((c) => <div key={c.crop} className="flex items-center justify-between rounded-2xl bg-secondary/35 p-3"><span className="text-3xl">{c.icon}</span><div className="flex-1 px-3"><p className="font-black">{c.crop}</p><p className="text-sm font-bold text-muted-foreground">{c.country}</p></div><b className="text-primary">{c.profit}</b></div>)}</div></Card><Card title={t.climate} icon="☀️"><div className="space-y-3 font-bold"><p><CloudSun className="mr-2 inline size-5 text-primary" /> 28-35°C · Rain risk low</p><p className="rounded-2xl bg-accent/35 p-3">{t.best}: Ginger 🫚</p><p className="text-muted-foreground">Best sowing window: 12 days</p></div></Card><Card title={t.market} icon="💰"><div className="h-28"><ResponsiveContainer width="100%" height="100%"><AreaChart data={priceTrend}><Area dataKey="v" type="monotone" stroke="hsl(var(--primary))" fill="hsl(var(--secondary))" strokeWidth={3} /></AreaChart></ResponsiveContainer></div><p className="mt-2 font-black text-primary">{t.sellNow}: 6 days</p></Card><Card title={t.direct} icon="🤝"><Button variant="field" className="w-full rounded-full"><Package />Sell Crop</Button><Button variant="secondaryFarm" className="mt-3 w-full rounded-full"><Phone />Buyer Chat / Call</Button></Card><Card title={t.fpo} icon="🏢"><p className="font-bold text-muted-foreground">Group selling gives better price and bulk export opportunities.</p><Button variant="secondaryFarm" className="mt-4 w-full rounded-full"><Users />Join FPO</Button></Card><Card title={t.labour} icon="🧑‍🌾"><p className="font-black">Need 5 workers for harvest</p><p className="text-sm font-bold text-muted-foreground">Ratings enabled · Nearby labourers</p><Button variant="field" className="mt-4 w-full rounded-full"><Briefcase />Post Job</Button></Card><Card title={t.schemes} icon="🏦"><p className="font-bold">Subsidies · Loans · Eligibility checker</p><Button variant="secondaryFarm" className="mt-4 w-full rounded-full">{t.apply}</Button></Card></div>}</section>}
+      {role === "farmer" && (
+        <section className="mx-auto max-w-7xl px-4 py-5">
+          <div className="mb-4 flex gap-2 overflow-x-auto pb-2">
+            {(Object.keys(t.tabs) as FarmerTab[]).map((tab) => (
+              <Button key={tab} variant={farmerTab === tab ? "field" : "glass"} className="rounded-full" onClick={() => setFarmerTab(tab)}>
+                {tab === "field" && <Map />}
+                {t.tabs[tab]}
+              </Button>
+            ))}
+          </div>
+
+          {farmerTab === "field" ? (
+            <div className="relative h-[calc(100svh-9.5rem)] min-h-[560px] overflow-hidden rounded-[2rem] border border-glass-border shadow-glass">
+              <KrishiMap selectedId={selectedId} language={language} onSelect={setSelectedId} />
+              <div className="absolute left-4 top-4 z-[850] rounded-[1.25rem] border border-glass-border bg-glass/92 p-4 shadow-control backdrop-blur-panel">
+                <p className="text-xs font-black uppercase text-muted-foreground">Live Field</p>
+                <p className="font-display text-xl font-black">{selectedContent.name}</p>
+                <p className="text-sm font-bold text-muted-foreground">{selectedContent.soil}</p>
+              </div>
+              <FieldIntelligencePanel region={selectedRegion} regionId={selectedId} language={language} />
+            </div>
+          ) : farmerTab === "schemes" ? (
+            <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
+              {governmentSchemes.map((scheme) => {
+                const content = scheme[language];
+                return (
+                  <article key={scheme.id} className="rounded-[1.5rem] border border-glass-border bg-card/90 p-4 shadow-control backdrop-blur-panel">
+                    <div className="mb-4 flex items-start gap-3">
+                      <span className="flex size-12 shrink-0 items-center justify-center rounded-2xl bg-secondary/45 text-2xl shadow-control">{content.icon}</span>
+                      <div>
+                        <p className="mb-1 inline-flex rounded-full bg-accent/35 px-3 py-1 text-xs font-black text-accent-foreground">{content.tag}</p>
+                        <h2 className="font-display text-lg font-black leading-tight">{content.title}</h2>
+                      </div>
+                    </div>
+                    <div className="space-y-3 text-sm font-bold">
+                      <p className="rounded-2xl bg-secondary/30 p-3"><span className="block text-xs uppercase text-muted-foreground">{t.benefit}</span>{content.benefit}</p>
+                      <p><span className="font-black text-primary">{t.eligibility}: </span>{content.eligibility}</p>
+                      <p className="text-muted-foreground"><span className="font-black text-foreground">{t.details}: </span>{content.description}</p>
+                    </div>
+                    <Button variant="field" className="mt-4 w-full rounded-full">{t.apply}</Button>
+                  </article>
+                );
+              })}
+            </div>
+          ) : (
+            <div className="grid gap-4 lg:grid-cols-3"><Card title={t.demand} icon="🌱"><div className="grid gap-3">{demandCrops.map((c) => <div key={c.crop} className="flex items-center justify-between rounded-2xl bg-secondary/35 p-3"><span className="text-3xl">{c.icon}</span><div className="flex-1 px-3"><p className="font-black">{c.crop}</p><p className="text-sm font-bold text-muted-foreground">{c.country}</p></div><b className="text-primary">{c.profit}</b></div>)}</div></Card><Card title={t.climate} icon="☀️"><div className="space-y-3 font-bold"><p><CloudSun className="mr-2 inline size-5 text-primary" /> 28-35°C · Rain risk low</p><p className="rounded-2xl bg-accent/35 p-3">{t.best}: Ginger 🫚</p><p className="text-muted-foreground">Best sowing window: 12 days</p></div></Card><Card title={t.market} icon="💰"><div className="h-28"><ResponsiveContainer width="100%" height="100%"><AreaChart data={priceTrend}><Area dataKey="v" type="monotone" stroke="hsl(var(--primary))" fill="hsl(var(--secondary))" strokeWidth={3} /></AreaChart></ResponsiveContainer></div><p className="mt-2 font-black text-primary">{t.sellNow}: 6 days</p></Card><Card title={t.direct} icon="🤝"><Button variant="field" className="w-full rounded-full"><Package />Sell Crop</Button><Button variant="secondaryFarm" className="mt-3 w-full rounded-full"><Phone />Buyer Chat / Call</Button></Card><Card title={t.fpo} icon="🏢"><p className="font-bold text-muted-foreground">Group selling gives better price and bulk export opportunities.</p><Button variant="secondaryFarm" className="mt-4 w-full rounded-full"><Users />Join FPO</Button></Card><Card title={t.labour} icon="🧑‍🌾"><p className="font-black">Need 5 workers for harvest</p><p className="text-sm font-bold text-muted-foreground">Ratings enabled · Nearby labourers</p><Button variant="field" className="mt-4 w-full rounded-full"><Briefcase />Post Job</Button></Card><Card title={t.schemes} icon="🏦"><p className="font-bold">Subsidies · Loans · Eligibility checker</p><Button variant="secondaryFarm" className="mt-4 w-full rounded-full" onClick={() => setFarmerTab("schemes")}>{t.apply}</Button></Card></div>
+          )}
+        </section>
+      )}
 
       {role === "buyer" && <section className="mx-auto grid max-w-7xl gap-4 px-4 py-6 lg:grid-cols-3"><Card title={t.browse} icon="🛒"><p className="font-bold text-muted-foreground">Filter by location, quantity and price.</p></Card><Card title="Bulk purchase via FPO" icon="🏢"><p className="font-bold text-muted-foreground">Sugarcane · Tomato · Ginger lots ready.</p></Card><Card title={t.track} icon="📦"><p className="font-bold text-muted-foreground">Order #KM-204 reaches tomorrow.</p><Button variant="field" className="mt-4 w-full rounded-full">{t.contact}</Button></Card></section>}
 
