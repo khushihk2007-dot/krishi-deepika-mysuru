@@ -1,6 +1,6 @@
 import { AlertTriangle, Droplets, Layers3, MapPin, Phone, Thermometer, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Language, Region, uiLabels } from "@/data/krishiMysuru";
+import { getRegionContent, Language, Region, RegionId, uiLabels } from "@/data/krishiMysuru";
 
 const phPosition = (ph: number) => `${Math.min(100, Math.max(0, ((ph - 4) / 6) * 100))}%`;
 const cropScores = [
@@ -11,6 +11,27 @@ const cropScores = [
 ];
 
 const cropIcons: Record<string, string> = {
+  "अदरक": "🫚",
+  "अनार": "🍎",
+  "आलू": "🥔",
+  "इलायची": "🌿",
+  "कपास": "☁️",
+  "काली मिर्च": "🫑",
+  "केला": "🍌",
+  "कॉफी": "☕",
+  "गन्ना": "🎋",
+  "चमेली": "🌼",
+  "टमाटर": "🍅",
+  "धान": "🌾",
+  "नारियल": "🥥",
+  "बैंगन": "🍆",
+  "मक्का": "🌽",
+  "मिर्च": "🌶️",
+  "मूली": "🥕",
+  "मेथी": "🌿",
+  "शहतूत": "🫐",
+  "सूरजमुखी": "🌻",
+  "हल्दी": "🫚",
   banana: "🍌",
   beans: "🫛",
   brinjal: "🍆",
@@ -44,13 +65,25 @@ const cropIcons: Record<string, string> = {
   tobacco: "🍃",
   tomato: "🍅",
   turmeric: "🫚",
+  "ಅರಿಶಿನ": "🫚",
+  "ಆಲೂಗಡ್ಡೆ": "🥔",
+  "ಏಲಕ್ಕಿ": "🌿",
+  "ಕಬ್ಬು": "🎋",
+  "ಕಾಫಿ": "☕",
+  "ತೆಂಗು": "🥥",
+  "ಟೊಮೆಟೊ": "🍅",
+  "ಭತ್ತ": "🌾",
+  "ಬಾಳೆ": "🍌",
+  "ಮೆಣಸಿನಕಾಯಿ": "🌶️",
+  "ಮೆಕ್ಕೆಜೋಳ": "🌽",
+  "ಶುಂಠಿ": "🫚",
 };
 
 const getCropIcon = (crop: string) => cropIcons[crop.toLowerCase()] ?? "🌱";
 
-export function FieldIntelligencePanel({ region, language }: { region: Region; language: Language }) {
+export function FieldIntelligencePanel({ region, regionId, language }: { region: Region; regionId: RegionId; language: Language }) {
   const labels = uiLabels[language];
-  const localized = region[language];
+  const localized = getRegionContent(region, regionId, language);
   const isAcidic = region.ph < 6;
 
   return (

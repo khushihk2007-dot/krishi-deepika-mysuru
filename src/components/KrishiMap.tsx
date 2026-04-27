@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { DivIcon } from "leaflet";
 import { MapContainer, Marker, TileLayer, Tooltip, useMap } from "react-leaflet";
-import { Language, RegionId, regionEntries } from "@/data/krishiMysuru";
+import { getRegionContent, Language, RegionId, regionEntries } from "@/data/krishiMysuru";
 
 type KrishiMapProps = {
   selectedId: RegionId;
@@ -78,7 +78,7 @@ export function KrishiMap({ selectedId, language, onSelect }: KrishiMapProps) {
         {markers.map(({ id, region, icon }) => (
           <Marker key={id} position={[region.lat, region.lng]} icon={icon} eventHandlers={{ click: () => onSelect(id) }}>
             <Tooltip direction="top" offset={[0, -14]} opacity={0.95}>
-              {region[language].name} · pH {region.ph.toFixed(1)}
+              {getRegionContent(region, id, language).name} · pH {region.ph.toFixed(1)}
             </Tooltip>
           </Marker>
         ))}

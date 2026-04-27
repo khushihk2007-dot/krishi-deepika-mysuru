@@ -19,6 +19,8 @@ const buttonVariants = cva(
           "border border-glass-border bg-glass/70 text-glass-foreground shadow-control backdrop-blur-panel hover:bg-glass/85",
         field:
           "bg-primary text-primary-foreground shadow-control hover:bg-primary/90 active:scale-[0.98]",
+        secondaryFarm:
+          "bg-secondary text-secondary-foreground shadow-control hover:bg-secondary/85 active:scale-[0.98]",
       },
       size: {
         default: "h-10 px-4 py-2",

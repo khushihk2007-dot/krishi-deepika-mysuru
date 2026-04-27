@@ -10,26 +10,26 @@ All colors MUST be HSL.
 
 @layer base {
   :root {
-    --background: 88 33% 96%;
-    --foreground: 151 31% 12%;
+    --background: 88 64% 94%;
+    --foreground: 0 0% 18%;
 
-    --card: 92 38% 98%;
-    --card-foreground: 151 31% 12%;
+    --card: 96 48% 98%;
+    --card-foreground: 0 0% 18%;
 
     --popover: 92 38% 98%;
     --popover-foreground: 151 31% 12%;
 
-    --primary: 148 55% 27%;
-    --primary-foreground: 82 48% 96%;
+    --primary: 123 46% 34%;
+    --primary-foreground: 88 64% 96%;
 
-    --secondary: 44 80% 86%;
+    --secondary: 122 39% 71%;
     --secondary-foreground: 151 31% 12%;
 
-    --muted: 91 26% 88%;
-    --muted-foreground: 149 11% 38%;
+    --muted: 88 45% 90%;
+    --muted-foreground: 24 12% 38%;
 
-    --accent: 39 92% 54%;
-    --accent-foreground: 151 31% 10%;
+    --accent: 48 96% 58%;
+    --accent-foreground: 0 0% 18%;
 
     --destructive: 4 78% 50%;
     --destructive-foreground: 0 0% 100%;
@@ -40,17 +40,17 @@ All colors MUST be HSL.
 
     --radius: 0.75rem;
 
-    --glass: 92 38% 98%;
-    --glass-foreground: 151 31% 12%;
-    --glass-border: 151 31% 12% / 0.14;
+    --glass: 96 48% 98%;
+    --glass-foreground: 0 0% 18%;
+    --glass-border: 123 46% 34% / 0.16;
     --warning: 4 78% 50%;
     --warning-foreground: 0 0% 100%;
     --success: 133 46% 42%;
     --success-foreground: 0 0% 100%;
-    --map-filter: saturate(1.08) contrast(0.98) brightness(1.04);
-    --shadow-glass: 0 24px 80px -30px hsl(151 31% 6% / 0.34);
-    --shadow-control: 0 16px 38px -26px hsl(151 31% 6% / 0.28);
-    --shadow-marker: 0 10px 22px -8px hsl(151 31% 6% / 0.65);
+    --map-filter: saturate(1.04) contrast(0.96) brightness(1.03);
+    --shadow-glass: 0 22px 65px -34px hsl(123 46% 18% / 0.36);
+    --shadow-control: 0 14px 34px -24px hsl(24 15% 28% / 0.25);
+    --shadow-marker: 0 10px 22px -8px hsl(123 46% 18% / 0.62);
 
     --sidebar-background: 0 0% 98%;
 

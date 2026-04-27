@@ -1,4 +1,4 @@
-export type Language = "en" | "kn";
+export type Language = "en" | "kn" | "hi";
 
 export const uiLabels = {
   en: {
@@ -18,6 +18,15 @@ export const uiLabels = {
     hum: "ತೇವಾಂಶ",
     temp: "ತಾಪಮಾನ",
     soil: "ಮಣ್ಣಿನ ವಿಧ",
+  },
+  hi: {
+    dashboard: "डैशबोर्ड",
+    health: "मिट्टी स्वास्थ्य",
+    recommend: "अनुशंसित फसलें",
+    call: "विशेषज्ञ को कॉल करें",
+    hum: "नमी",
+    temp: "तापमान",
+    soil: "मिट्टी का प्रकार",
   },
 } as const;
 
@@ -53,3 +62,33 @@ export const regions = {
 
 export type RegionId = keyof typeof regions;
 export const regionEntries = Object.entries(regions) as [RegionId, Region][];
+
+const hindiRegions: Record<RegionId, RegionContent> = {
+  gokulam: { name: "गोकुलम", soil: "पुरानी लाल दोमट", crops: ["माइक्रोग्रीन्स", "जड़ी-बूटियाँ"], tip: "हाइड्रोपोनिक्स के लिए सर्वोत्तम।" },
+  jayalakshmipuram: { name: "जयलक्ष्मीपुरम", soil: "पुरानी लाल दोमट", crops: ["माइक्रोग्रीन्स", "जड़ी-बूटियाँ"], tip: "शहरी छत खेती के लिए आदर्श।" },
+  vv_puram: { name: "वी.वी. पुरम", soil: "पुरानी लाल दोमट", crops: ["ऑर्गेनिक सलाद", "जड़ी-बूटियाँ"], tip: "उच्च मूल्य वाली शहरी खेती पर ध्यान दें।" },
+  hebbal: { name: "हेब्बाल", soil: "लाल कंकरीली मिट्टी", crops: ["गेंदा", "सहजन"], tip: "औद्योगिक मिट्टी के लिए मजबूत पौधे।" },
+  metagalli: { name: "मेटागल्ली", soil: "लाल कंकरीली मिट्टी", crops: ["सूरजमुखी", "झाड़ियाँ"], tip: "कम देखभाल वाली वनस्पति।" },
+  belavadi: { name: "बेलवाड़ी", soil: "मिश्रित कंकरीली मिट्टी", crops: ["सहजन", "मोटे अनाज"], tip: "मिट्टी में पोषण बढ़ाना आवश्यक है।" },
+  srirampura: { name: "श्रीरामपुरा", soil: "लाल चिकनी दोमट", crops: ["केला", "बैंगन"], tip: "नमी रोकने की क्षमता उत्कृष्ट।" },
+  jp_nagar: { name: "जे.पी. नगर", soil: "लाल चिकनी दोमट", crops: ["बीन्स", "पपीता"], tip: "घर के बगीचे और फलदार पौधों के लिए आदर्श।" },
+  vidyaranyapuram: { name: "विद्यारण्यपुरम", soil: "लाल चिकनी दोमट", crops: ["टमाटर", "मिर्च"], tip: "गहन सब्जी खेती के लिए अच्छा।" },
+  vijayanagar: { name: "विजयनगर", soil: "लाल रेतीली/पथरीली", crops: ["अनार", "हरी पत्तेदार सब्जियाँ"], tip: "ड्रिप सिंचाई की सलाह दी जाती है।" },
+  bogadi: { name: "बोगादी", soil: "लाल रेतीली/पथरीली", crops: ["बीन्स", "पालक"], tip: "सब्जियों के लिए उठी हुई क्यारियाँ उपयोग करें।" },
+  hinkal: { name: "हिंकल", soil: "लाल रेतीली/पथरीली", crops: ["मेथी", "मूली"], tip: "नियमित रूप से जैविक खाद डालें।" },
+  nanjangud: { name: "नंजनगुड", soil: "काली जलोढ़ मिट्टी", crops: ["गन्ना", "केला"], tip: "कबिनी जल स्रोत क्षेत्र।" },
+  mandya: { name: "मांड्या", soil: "काली जलोढ़ मिट्टी", crops: ["गन्ना", "धान"], tip: "चीनी क्षेत्र की खेती पद्धति।" },
+  t_narasipura: { name: "टी. नरसीपुरा", soil: "नदी जलोढ़ मिट्टी", crops: ["धान", "चमेली"], tip: "नदी से पोषित उच्च उर्वरता।" },
+  kr_nagar: { name: "के.आर. नगर", soil: "काली जलोढ़ मिट्टी", crops: ["धान", "नारियल"], tip: "उत्कृष्ट KRS नहर क्षेत्र।" },
+  kodagu: { name: "कोडगु", soil: "अम्लीय वन मिट्टी", crops: ["कॉफी", "काली मिर्च"], tip: "मिट्टी अम्लीय है। चूना डालें।" },
+  sakleshpur: { name: "सकलेशपुर", soil: "लेटराइट वन मिट्टी", crops: ["इलायची", "कॉफी"], tip: "मसाला फसलों पर अधिक ध्यान दें।" },
+  hd_kote: { name: "एच.डी. कोटे", soil: "भूरी वन चिकनी मिट्टी", crops: ["कपास", "अदरक"], tip: "जैविक अदरक के लिए उपयुक्त।" },
+  hunsur: { name: "हुनसूर", soil: "लाल रेतीली दोमट", crops: ["तंबाकू", "मक्का"], tip: "मध्यम वर्षा क्षेत्र।" },
+  periyapatna: { name: "पेरियापटना", soil: "लाल रेतीली दोमट", crops: ["तंबाकू", "चंदन"], tip: "तंबाकू का प्रमुख क्षेत्र।" },
+  chamarajanagar: { name: "चामराजनगर", soil: "मिश्रित दोमट", crops: ["हल्दी", "शहतूत"], tip: "शुष्क जलवायु। ड्रिप सिंचाई उपयोग करें।" },
+  hassan: { name: "हासन", soil: "लाल दोमट", crops: ["आलू", "अदरक"], tip: "फफूंद रोग पर नज़र रखें।" },
+  holenarasipura: { name: "होलेनरसीपुरा", soil: "लाल जलोढ़ मिट्टी", crops: ["धान", "गन्ना"], tip: "मिश्रित नदी-आधारित खेती।" },
+};
+
+export const getRegionContent = (region: Region, id: RegionId, language: Language) =>
+  language === "hi" ? hindiRegions[id] : region[language];
