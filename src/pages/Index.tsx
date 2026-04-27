@@ -18,7 +18,7 @@ const copy = {
     tabs: { overview: "My Farm", field: "Field Intelligence", market: "Prices", sell: "Sell", fpo: "FPO", labour: "Labour", schemes: "Schemes" },
     demand: "High Demand Crops Abroad", climate: "Climate & Prediction", market: "Market Intelligence", direct: "Direct Selling", fpo: "Farmer Groups", labour: "Labour Marketplace", schemes: "Government Schemes",
     best: "Best crop this month", sellNow: "Best time to sell", apply: "Apply now", contact: "Contact farmer", nearby: "Nearby jobs", wage: "Daily wage", track: "Order tracking", browse: "Browse crops",
-    benefit: "Benefit", eligibility: "Eligibility", details: "Details",
+    benefit: "Benefit", eligibility: "Eligibility", details: "Details", destination: "Target countries", profit: "Profit", reason: "Reason for demand",
   },
   kn: {
     hero: "ಸ್ಮಾರ್ಟ್ ಕೃಷಿಯಿಂದ ನಿಮ್ಮ ಆದಾಯ ಹೆಚ್ಚಿಸಿ",
@@ -28,7 +28,7 @@ const copy = {
     tabs: { overview: "ನನ್ನ ಕೃಷಿ", field: "ಕ್ಷೇತ್ರ ಮಾಹಿತಿ", market: "ಬೆಲೆಗಳು", sell: "ಮಾರಾಟ", fpo: "FPO", labour: "ಕಾರ್ಮಿಕ", schemes: "ಯೋಜನೆಗಳು" },
     demand: "ವಿದೇಶದಲ್ಲಿ ಹೆಚ್ಚು ಬೇಡಿಕೆಯ ಬೆಳೆಗಳು", climate: "ಹವಾಮಾನ ಮತ್ತು ಮುನ್ಸೂಚನೆ", market: "ಮಾರುಕಟ್ಟೆ ಮಾಹಿತಿ", direct: "ನೇರ ಮಾರಾಟ", fpo: "ರೈತ ಗುಂಪುಗಳು", labour: "ಕಾರ್ಮಿಕ ಮಾರುಕಟ್ಟೆ", schemes: "ಸರ್ಕಾರಿ ಯೋಜನೆಗಳು",
     best: "ಈ ತಿಂಗಳ ಉತ್ತಮ ಬೆಳೆ", sellNow: "ಮಾರಾಟಕ್ಕೆ ಉತ್ತಮ ಸಮಯ", apply: "ಈಗ ಅರ್ಜಿ", contact: "ರೈತನನ್ನು ಸಂಪರ್ಕಿಸಿ", nearby: "ಹತ್ತಿರದ ಕೆಲಸಗಳು", wage: "ದಿನ ಕೂಲಿ", track: "ಆರ್ಡರ್ ಟ್ರ್ಯಾಕಿಂಗ್", browse: "ಬೆಳೆಗಳನ್ನು ನೋಡಿ",
-    benefit: "ಲಾಭ", eligibility: "ಅರ್ಹತೆ", details: "ವಿವರಗಳು",
+    benefit: "ಲಾಭ", eligibility: "ಅರ್ಹತೆ", details: "ವಿವರಗಳು", destination: "ಗುರಿ ದೇಶಗಳು", profit: "ಲಾಭ", reason: "ಬೇಡಿಕೆಯ ಕಾರಣ",
   },
   hi: {
     hero: "स्मार्ट खेती से अपनी आय बढ़ाएँ",
@@ -38,15 +38,19 @@ const copy = {
     tabs: { overview: "मेरा खेत", field: "फील्ड इंटेलिजेंस", market: "कीमतें", sell: "बेचना", fpo: "FPO", labour: "मजदूर", schemes: "योजनाएँ" },
     demand: "विदेश में अधिक मांग वाली फसलें", climate: "मौसम और पूर्वानुमान", market: "बाज़ार जानकारी", direct: "सीधी बिक्री", fpo: "किसान समूह", labour: "मजदूर बाज़ार", schemes: "सरकारी योजनाएँ",
     best: "इस महीने की श्रेष्ठ फसल", sellNow: "बेचने का अच्छा समय", apply: "अभी आवेदन", contact: "किसान से संपर्क", nearby: "नज़दीकी काम", wage: "दैनिक मज़दूरी", track: "ऑर्डर ट्रैकिंग", browse: "फसलें देखें",
-    benefit: "लाभ", eligibility: "पात्रता", details: "विवरण",
+    benefit: "लाभ", eligibility: "पात्रता", details: "विवरण", destination: "लक्ष्य देश", profit: "लाभ", reason: "मांग का कारण",
   },
 } as const;
 
-const demandCrops = [
-  { icon: "🎋", crop: "Sugarcane", country: "UAE", profit: "+28%" },
-  { icon: "🍅", crop: "Tomato", country: "Europe", profit: "+34%" },
-  { icon: "🫚", crop: "Ginger", country: "Singapore", profit: "+41%" },
-];
+const exportCrops = [
+  { district: "Mysuru", id: "mys_banana", flags: "🇦🇪 🇪🇺 🇺🇸", en: { crop: "Nanjangud Rasabale (Banana)", destination: "UAE, Europe, USA", demand: "Very High", profit: "+45%", reason: "Unique aroma and GI status; preferred as a luxury dessert fruit.", tag: "GI Protected", icon: "🍌" }, kn: { crop: "ನಂಜನಗೂಡು ರಸಬಾಳೆ", destination: "ಯುಎಇ, ಯುರೋಪ್, ಅಮೇರಿಕಾ", demand: "ಅತಿ ಹೆಚ್ಚು", profit: "+45%", reason: "ವಿಶಿಷ್ಟ ಸುಗಂಧ ಮತ್ತು ಜಿಐ ಟ್ಯಾಗ್; ಐಷಾರಾಮಿ ಹಣ್ಣಾಗಿ ವಿದೇಶಗಳಲ್ಲಿ ಬಳಕೆ.", tag: "ಜಿಕಾಯ್ ರಕ್ಷಿತ", icon: "🍌" }, hi: { crop: "नंजनगुड रसबाले केला", destination: "UAE, यूरोप, अमेरिका", demand: "बहुत अधिक", profit: "+45%", reason: "विशिष्ट सुगंध और GI टैग के कारण विदेशों में लक्ज़री फल के रूप में पसंद।", tag: "GI संरक्षित", icon: "🍌" } },
+  { district: "Mandya", id: "man_jaggery", flags: "🇦🇪 🇰🇼 🇬🇧", en: { crop: "Organic Jaggery (Block/Powder)", destination: "UAE, Kuwait, UK", demand: "High", profit: "+35%", reason: "Chemical-free process; high demand in health-conscious Middle East markets.", tag: "Health-Tech", icon: "🍯" }, kn: { crop: "ಸಾವಯವ ಬೆಲ್ಲ", destination: "ಯುಎಇ, ಕುವೈತ್, ಯುಕೆ", demand: "ಹೆಚ್ಚು", profit: "+35%", reason: "ರಾಸಾಯನಿಕ ಮುಕ್ತ ತಯಾರಿ; ಅರಬ್ ದೇಶಗಳಲ್ಲಿ ಆರೋಗ್ಯಕರ ಸಕ್ಕರೆಯಾಗಿ ಬಳಕೆ.", tag: "ಹೆಲ್ತ್-ಟೆಕ್", icon: "🍯" }, hi: { crop: "ऑर्गेनिक गुड़", destination: "UAE, कुवैत, UK", demand: "अधिक", profit: "+35%", reason: "रसायन-मुक्त प्रक्रिया के कारण स्वास्थ्य-सचेत Middle East बाजारों में मांग।", tag: "हेल्थ-टेक", icon: "🍯" } },
+  { district: "Chamarajanagar", id: "cha_turmeric", flags: "🇺🇸 🇩🇪 🇯🇵", en: { crop: "High-Curcumin Turmeric", destination: "USA, Germany, Japan", demand: "Very High", profit: "+40%", reason: "High curcumin content used in global pharmaceutical and cosmetic industries.", tag: "Industrial Grade", icon: "🌶️" }, kn: { crop: "ಅರಿಶಿನ (ಹೆಚ್ಚಿನ ಕುರ್ಕ್ಯುಮಿನ್)", destination: "ಅಮೇರಿಕಾ, ಜರ್ಮನಿ, ಜಪಾನ್", demand: "ಅತಿ ಹೆಚ್ಚು", profit: "+40%", reason: "ಔಷಧೀಯ ಮತ್ತು ಸೌಂದರ್ಯವರ್ಧಕ ಉದ್ದೇಶಗಳಿಗಾಗಿ ಜಾಗತಿಕ ಬೇಡಿಕೆ.", tag: "ಕೈಗಾರಿಕಾ ದರ್ಜೆ", icon: "🌶️" }, hi: { crop: "उच्च करक्यूमिन हल्दी", destination: "अमेरिका, जर्मनी, जापान", demand: "बहुत अधिक", profit: "+40%", reason: "अधिक करक्यूमिन के कारण फार्मा और कॉस्मेटिक उद्योगों में वैश्विक मांग।", tag: "औद्योगिक ग्रेड", icon: "🌶️" } },
+  { district: "Kodagu", id: "kod_coffee", flags: "🇮🇹 🇳🇴 🇯🇵", en: { crop: "Monsooned Malabar Coffee", destination: "Italy, Norway, Japan", demand: "Stable/Premium", profit: "+50%", reason: "Unique processing method; high value in specialty coffee shops abroad.", tag: "Premium Blend", icon: "☕" }, kn: { crop: "ಮಾನ್ಸೂನ್ ಮಲಬಾರ್ ಕಾಫಿ", destination: "ಇಟಲಿ, ನಾರ್ವೆ, ಜಪಾನ್", demand: "ಸ್ಥಿರ/ಪ್ರೀಮಿಯಂ", profit: "+50%", reason: "ವಿಶಿಷ್ಟ ಸಂಸ್ಕರಣಾ ವಿಧಾನ; ವಿದೇಶಿ ಕೆಫೆಗಳಲ್ಲಿ ಅತ್ಯಂತ ಹೆಚ್ಚಿನ ಬೆಲೆ.", tag: "ಪ್ರೀಮಿಯಂ ಬ್ಲೆಂಡ್", icon: "☕" }, hi: { crop: "मॉनसून्ड मालाबार कॉफी", destination: "इटली, नॉर्वे, जापान", demand: "स्थिर/प्रीमियम", profit: "+50%", reason: "विशिष्ट प्रोसेसिंग के कारण विदेशों के specialty coffee shops में उच्च मूल्य।", tag: "प्रीमियम ब्लेंड", icon: "☕" } },
+  { district: "Haveri (Byadgi)", id: "hav_chilli", flags: "🇺🇸 🇪🇺 🌏", en: { crop: "Byadgi Chilli (Oleoresin)", destination: "USA, Europe, Southeast Asia", demand: "Very High", profit: "+55%", reason: "Used for natural food coloring (Oleoresin) with zero heat/pungency.", tag: "Global GI", icon: "🌶️" }, kn: { crop: "ಬ್ಯಾಡಗಿ ಮೆಣಸಿನಕಾಯಿ", destination: "ಅಮೇರಿಕಾ, ಯುರೋಪ್", demand: "ಅತಿ ಹೆಚ್ಚು", profit: "+55%", reason: "ನೈಸರ್ಗಿಕ ಆಹಾರ ಬಣ್ಣ ತಯಾರಿಸಲು ಅಂತರಾಷ್ಟ್ರೀಯ ಮಟ್ಟದಲ್ಲಿ ಬಳಕೆ.", tag: "ಜಾಗತಿಕ ಜಿಐ", icon: "🌶️" }, hi: { crop: "ब्याडगी मिर्च", destination: "अमेरिका, यूरोप, दक्षिण-पूर्व एशिया", demand: "बहुत अधिक", profit: "+55%", reason: "प्राकृतिक food coloring oleoresin के लिए अंतरराष्ट्रीय उपयोग।", tag: "वैश्विक GI", icon: "🌶️" } },
+  { district: "Hassan", id: "has_potato", flags: "🇸🇬 🇱🇰", en: { crop: "Processing-Grade Potato", destination: "Singapore, Sri Lanka", demand: "Moderate", profit: "+25%", reason: "High starch content ideal for making chips and processed snacks.", tag: "Value Chain", icon: "🥔" }, kn: { crop: "ಸಂಸ್ಕರಣಾ ದರ್ಜೆಯ ಆಲೂಗಡ್ಡೆ", destination: "ಸಿಂಗಾಪುರ, ಶ್ರೀಲಂಕಾ", demand: "ಮಧ್ಯಮ", profit: "+25%", reason: "ಚಿಪ್ಸ್ ಮತ್ತು ಸಂಸ್ಕರಿಸಿದ ತಿಂಡಿಗಳ ತಯಾರಿಕೆಗೆ ಹೆಚ್ಚು ಸೂಕ್ತ.", tag: "ಮೌಲ್ಯವರ್ಧನೆ", icon: "🥔" }, hi: { crop: "प्रोसेसिंग-ग्रेड आलू", destination: "सिंगापुर, श्रीलंका", demand: "मध्यम", profit: "+25%", reason: "अधिक स्टार्च के कारण chips और processed snacks के लिए उपयुक्त।", tag: "वैल्यू चेन", icon: "🥔" } },
+  { district: "Vijayapura/Bagalkot", id: "vij_grapes", flags: "🇳🇱 🇧🇩 🇦🇪", en: { crop: "Seedless Grapes / Pomegranate", destination: "Netherlands, Bangladesh, UAE", demand: "High", profit: "+38%", reason: "Excellent shelf life and size; high sugar content (Brix level).", tag: "Export Quality", icon: "🍇" }, kn: { crop: "ಬೀಜವಿಲ್ಲದ ದ್ರಾಕ್ಷಿ / ದಾಳಿಂಬೆ", destination: "ನೆದರ್ಲ್ಯಾಂಡ್ಸ್, ಬಾಂಗ್ಲಾದೇಶ, ಯುಎಇ", demand: "ಹೆಚ್ಚು", profit: "+38%", reason: "ದೀರ್ಘ ಬಾಳಿಕೆ ಮತ್ತು ಸಿಹಿ ಅಂಶ (Brix level) ಹೆಚ್ಚಿರುವುದರಿಂದ ಬೇಡಿಕೆ.", tag: "ರಫ್ತು ಗುಣಮಟ್ಟ", icon: "🍇" }, hi: { crop: "बीजरहित अंगूर / अनार", destination: "नीदरलैंड, बांग्लादेश, UAE", demand: "अधिक", profit: "+38%", reason: "बेहतरीन shelf life, आकार और अधिक मिठास (Brix level) के कारण मांग।", tag: "निर्यात गुणवत्ता", icon: "🍇" } },
++] satisfies Array<{ district: string; id: string; flags: string } & Record<Language, { crop: string; destination: string; demand: string; profit: string; reason: string; tag: string; icon: string }>>;
 const priceTrend = [{ v: 28 }, { v: 34 }, { v: 31 }, { v: 42 }, { v: 48 }, { v: 54 }, { v: 61 }];
 
 const governmentSchemes = [
