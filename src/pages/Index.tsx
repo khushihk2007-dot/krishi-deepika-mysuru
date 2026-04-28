@@ -1,5 +1,5 @@
-import { useState } from "react";
-import { Briefcase, Building2, CloudSun, Globe2, Handshake, Leaf, Map, Mic, Package, Phone, ShoppingCart, Sprout, TrendingUp, Users } from "lucide-react";
+import { useMemo, useState } from "react";
+import { ArrowLeft, ArrowRight, Briefcase, CloudSun, Filter, Globe2, Leaf, Map, Mic, Package, Phone, Search, ShoppingCart, Sprout, Users, X } from "lucide-react";
 import { Area, AreaChart, ResponsiveContainer } from "recharts";
 import { Button } from "@/components/ui/button";
 import { FieldIntelligencePanel } from "@/components/FieldIntelligencePanel";
@@ -8,6 +8,8 @@ import { getRegionContent, Language, RegionId, regions } from "@/data/krishiMysu
 
 type Role = "home" | "farmer" | "buyer" | "labourer";
 type FarmerTab = "overview" | "field" | "market" | "sell" | "fpo" | "labour" | "schemes";
+type Scheme = (typeof governmentSchemes)[number];
+type ExportCrop = (typeof exportCrops)[number];
 
 const copy = {
   en: {
@@ -84,13 +86,63 @@ const governmentSchemes = [
 ] satisfies Array<Record<Language, { title: string; benefit: string; eligibility: string; description: string; tag: string; icon: string }> & { id: string }>;
 
 const Index = () => {
-  const [language, setLanguage] = useState<Language>("en");
+  const [language, setLanguageState] = useState<Language>(() => {
+    const saved = localStorage.getItem("krishi-language");
+    return saved === "kn" || saved === "hi" || saved === "en" ? saved : "en";
+  });
+  const [schemeSearch, setSchemeSearch] = useState("");
+  const [schemeCategory, setSchemeCategory] = useState("all");
+  const [schemeEligibility, setSchemeEligibility] = useState("all");
+  const [selectedScheme, setSelectedScheme] = useState<Scheme | null>(null);
+  const [applyingScheme, setApplyingScheme] = useState<Scheme | null>(null);
+  const [exportCountry, setExportCountry] = useState("all");
+  const [exportDemand, setExportDemand] = useState("all");
+  const [exportProfit, setExportProfit] = useState("all");
+  const [selectedCrop, setSelectedCrop] = useState<ExportCrop | null>(null);
+  const [sellingCrop, setSellingCrop] = useState<ExportCrop | null>(null);
   const [role, setRole] = useState<Role>("home");
   const [farmerTab, setFarmerTab] = useState<FarmerTab>("overview");
   const [selectedId, setSelectedId] = useState<RegionId>("gokulam");
   const selectedRegion = regions[selectedId];
   const selectedContent = getRegionContent(selectedRegion, selectedId, language);
   const t = copy[language];
+
+  const setLanguage = (lng: Language) => {
+    setLanguageState(lng);
+    localStorage.setItem("krishi-language", lng);
+  };
+
+  const schemeCategories = useMemo(() => ["all", ...Array.from(new Set(governmentSchemes.map((scheme) => scheme[language].tag)))], [language]);
+  const schemeEligibilityOptions = useMemo(() => ["all", ...Array.from(new Set(governmentSchemes.map((scheme) => scheme[language].eligibility)))], [language]);
+  const filteredSchemes = governmentSchemes.filter((scheme) => {
+    const content = scheme[language];
+    const haystack = `${content.title} ${content.benefit} ${content.eligibility} ${content.description} ${content.tag}`.toLowerCase();
+    return (
+      haystack.includes(schemeSearch.toLowerCase()) &&
+      (schemeCategory === "all" || content.tag === schemeCategory) &&
+      (schemeEligibility === "all" || content.eligibility === schemeEligibility)
+    );
+  });
+
+  const countryOptions = useMemo(() => ["all", "UAE", "Europe", "USA", "Japan", "Middle East", "Southeast Asia"], []);
+  const demandOptions = useMemo(() => ["all", "Very High", "High", "Moderate", "Stable/Premium"], []);
+  const filteredExportCrops = exportCrops.filter((crop) => {
+    const content = crop[language];
+    const profitValue = Number(content.profit.replace(/[^0-9]/g, ""));
+    return (
+      (exportCountry === "all" || content.destination.toLowerCase().includes(exportCountry.toLowerCase())) &&
+      (exportDemand === "all" || crop.en.demand === exportDemand || content.demand === exportDemand) &&
+      (exportProfit === "all" || profitValue >= Number(exportProfit))
+    );
+  });
+
+  const getSeasonBadge = (cropId: string) => {
+    const month = new Date().getMonth();
+    const summer = month >= 2 && month <= 5;
+    const monsoon = month >= 5 && month <= 9;
+    const badge = cropId.includes("banana") || cropId.includes("turmeric") ? (monsoon ? "Best season · low risk" : "Irrigation needed") : summer ? "Harvest window · heat risk" : "Export-ready window";
+    return language === "kn" ? badge.replace("Best season · low risk", "ಉತ್ತಮ ಋತು · ಕಡಿಮೆ ಅಪಾಯ").replace("Irrigation needed", "ನೀರಾವರಿ ಅಗತ್ಯ").replace("Harvest window · heat risk", "ಕೊಯ್ಲು ಸಮಯ · ಬಿಸಿಲಿನ ಅಪಾಯ").replace("Export-ready window", "ರಫ್ತು ಸಿದ್ಧ ಸಮಯ") : badge;
+  };
 
   const Card = ({ title, icon, children }: { title: string; icon: string; children: React.ReactNode }) => (
     <section className="rounded-[1.5rem] border border-glass-border bg-card/88 p-4 shadow-control backdrop-blur-panel">
@@ -141,8 +193,14 @@ const Index = () => {
               <FieldIntelligencePanel region={selectedRegion} regionId={selectedId} language={language} />
             </div>
           ) : farmerTab === "schemes" ? (
-            <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
-              {governmentSchemes.map((scheme) => {
+            <div className="space-y-4">
+              <div className="grid gap-3 rounded-[1.5rem] border border-glass-border bg-card/90 p-4 shadow-control backdrop-blur-panel md:grid-cols-[1fr_220px_220px]">
+                <label className="relative"><Search className="absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" /><input value={schemeSearch} onChange={(e) => setSchemeSearch(e.target.value)} placeholder={language === "kn" ? "ವಿಮೆ, ಸೌರ... ಹುಡುಕಿ" : "Search insurance, solar..."} className="h-11 w-full rounded-full border border-input bg-background pl-10 pr-4 text-sm font-bold outline-none focus:ring-2 focus:ring-ring" /></label>
+                <select value={schemeCategory} onChange={(e) => setSchemeCategory(e.target.value)} className="h-11 rounded-full border border-input bg-background px-4 text-sm font-bold"><option value="all">{language === "kn" ? "ಎಲ್ಲಾ ವರ್ಗಗಳು" : "All categories"}</option>{schemeCategories.slice(1).map((item) => <option key={item} value={item}>{item}</option>)}</select>
+                <select value={schemeEligibility} onChange={(e) => setSchemeEligibility(e.target.value)} className="h-11 rounded-full border border-input bg-background px-4 text-sm font-bold"><option value="all">{language === "kn" ? "ಎಲ್ಲಾ ಅರ್ಹತೆ" : "All eligibility"}</option>{schemeEligibilityOptions.slice(1).map((item) => <option key={item} value={item}>{item}</option>)}</select>
+              </div>
+              <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
+              {filteredSchemes.map((scheme) => {
                 const content = scheme[language];
                 return (
                   <article key={scheme.id} className="rounded-[1.5rem] border border-glass-border bg-card/90 p-4 shadow-control backdrop-blur-panel">
@@ -158,10 +216,11 @@ const Index = () => {
                       <p><span className="font-black text-primary">{t.eligibility}: </span>{content.eligibility}</p>
                       <p className="text-muted-foreground"><span className="font-black text-foreground">{t.details}: </span>{content.description}</p>
                     </div>
-                    <Button variant="field" className="mt-4 w-full rounded-full">{t.apply}</Button>
+                    <div className="mt-4 grid grid-cols-2 gap-2"><Button variant="secondaryFarm" className="rounded-full" onClick={() => setSelectedScheme(scheme)}>{t.details}</Button><Button variant="field" className="rounded-full" onClick={() => setApplyingScheme(scheme)}>{t.apply}</Button></div>
                   </article>
                 );
               })}
+              </div>
             </div>
           ) : (
             <div className="grid gap-4 lg:grid-cols-3"><section className="rounded-[1.5rem] border border-glass-border bg-card/88 p-4 shadow-control backdrop-blur-panel lg:col-span-3"><div className="mb-3 flex items-center gap-2"><span className="text-2xl">🌱</span><h2 className="font-display text-lg font-black">{t.demand}</h2></div><div className="flex gap-3 overflow-x-auto pb-2">{exportCrops.map((crop) => { const c = crop[language]; return <article key={crop.id} className="w-[285px] shrink-0 rounded-[1.25rem] border border-glass-border bg-secondary/25 p-4"><div className="mb-3 flex items-start justify-between gap-3"><span className="text-4xl">{c.icon}</span><b className="rounded-full bg-card px-3 py-1 text-success shadow-control">{c.profit}</b></div><p className="mb-1 inline-flex rounded-full bg-accent/35 px-3 py-1 text-xs font-black text-accent-foreground">{c.tag}</p><h3 className="mt-2 font-display text-lg font-black leading-tight">{c.crop}</h3><p className="mt-1 text-xs font-black uppercase text-muted-foreground">{crop.district}</p><div className="mt-3 rounded-2xl bg-card/75 p-3"><p className="text-lg">{crop.flags}</p><p className="text-sm font-bold text-muted-foreground">{c.destination}</p></div><p className="mt-3 text-sm font-bold"><span className="text-primary">{t.reason}: </span>{c.reason}</p></article>; })}</div></section><Card title={t.climate} icon="☀️"><div className="space-y-3 font-bold"><p><CloudSun className="mr-2 inline size-5 text-primary" /> 28-35°C · Rain risk low</p><p className="rounded-2xl bg-accent/35 p-3">{t.best}: Ginger 🫚</p><p className="text-muted-foreground">Best sowing window: 12 days</p></div></Card><Card title={t.market} icon="💰"><div className="h-28"><ResponsiveContainer width="100%" height="100%"><AreaChart data={priceTrend}><Area dataKey="v" type="monotone" stroke="hsl(var(--primary))" fill="hsl(var(--secondary))" strokeWidth={3} /></AreaChart></ResponsiveContainer></div><p className="mt-2 font-black text-primary">{t.sellNow}: 6 days</p></Card><Card title={t.direct} icon="🤝"><Button variant="field" className="w-full rounded-full"><Package />Sell Crop</Button><Button variant="secondaryFarm" className="mt-3 w-full rounded-full"><Phone />Buyer Chat / Call</Button></Card><Card title={t.fpo} icon="🏢"><p className="font-bold text-muted-foreground">Group selling gives better price and bulk export opportunities.</p><Button variant="secondaryFarm" className="mt-4 w-full rounded-full"><Users />Join FPO</Button></Card><Card title={t.labour} icon="🧑‍🌾"><p className="font-black">Need 5 workers for harvest</p><p className="text-sm font-bold text-muted-foreground">Ratings enabled · Nearby labourers</p><Button variant="field" className="mt-4 w-full rounded-full"><Briefcase />Post Job</Button></Card><Card title={t.schemes} icon="🏦"><p className="font-bold">Subsidies · Loans · Eligibility checker</p><Button variant="secondaryFarm" className="mt-4 w-full rounded-full" onClick={() => setFarmerTab("schemes")}>{t.apply}</Button></Card></div>
