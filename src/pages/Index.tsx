@@ -1,5 +1,5 @@
 import { useMemo, useState } from "react";
-import { ArrowLeft, ArrowRight, Briefcase, CloudSun, Filter, Globe2, Leaf, Map, Mic, Package, Phone, Search, ShoppingCart, Sprout, Users, X } from "lucide-react";
+import { ArrowLeft, ArrowRight, Briefcase, CloudSun, Globe2, Leaf, Map, Mic, Package, Phone, Search, ShoppingCart, Sprout, Users, X } from "lucide-react";
 import { Area, AreaChart, ResponsiveContainer } from "recharts";
 import { Button } from "@/components/ui/button";
 import { FieldIntelligencePanel } from "@/components/FieldIntelligencePanel";
@@ -104,6 +104,9 @@ const Index = () => {
   const [farmerTab, setFarmerTab] = useState<FarmerTab>("overview");
   const [selectedId, setSelectedId] = useState<RegionId>("gokulam");
   const selectedRegion = regions[selectedId];
+  const roles: Role[] = ["home", "farmer", "labourer", "buyer"];
+  const roleIndex = roles.indexOf(role);
+  const goRole = (direction: -1 | 1) => setRole(roles[(roleIndex + direction + roles.length) % roles.length]);
   const selectedContent = getRegionContent(selectedRegion, selectedId, language);
   const t = copy[language];
 
@@ -261,6 +264,35 @@ const Index = () => {
       {role === "buyer" && <section className="mx-auto grid max-w-7xl gap-4 px-4 py-6 lg:grid-cols-3"><Card title={t.browse} icon="🛒"><p className="font-bold text-muted-foreground">Filter by location, quantity and price.</p></Card><Card title="Bulk purchase via FPO" icon="🏢"><p className="font-bold text-muted-foreground">Sugarcane · Tomato · Ginger lots ready.</p></Card><Card title={t.track} icon="📦"><p className="font-bold text-muted-foreground">Order #KM-204 reaches tomorrow.</p><Button variant="field" className="mt-4 w-full rounded-full">{t.contact}</Button></Card></section>}
 
       {role === "labourer" && <section className="mx-auto grid max-w-7xl gap-4 px-4 py-6 lg:grid-cols-3"><Card title={t.nearby} icon="👷"><p className="font-black">Harvest work · Nanjangud</p><p className="text-sm font-bold text-muted-foreground">5 km away · Apply with 1 click</p></Card><Card title={t.wage} icon="💰"><p className="font-display text-3xl font-black text-primary">₹650/day</p><p className="font-bold text-muted-foreground">Current local average</p></Card><Card title="Work history + ratings" icon="⭐"><p className="font-display text-3xl font-black text-primary">4.8/5</p><Button variant="field" className="mt-4 w-full rounded-full">Apply now</Button></Card></section>}
+
+      {(selectedScheme || applyingScheme || selectedCrop || sellingCrop) && (
+        <div className="fixed inset-0 z-[1200] flex items-center justify-center bg-foreground/35 p-4 backdrop-blur-sm">
+          <div className="max-h-[88svh] w-full max-w-2xl overflow-y-auto rounded-[1.75rem] border border-glass-border bg-card p-5 shadow-glass">
+            <div className="mb-4 flex items-start justify-between gap-3">
+              <div>
+                <p className="text-xs font-black uppercase text-muted-foreground">Krishi-Mysuru</p>
+                <h2 className="font-display text-2xl font-black">
+                  {selectedScheme?.[language].title || applyingScheme?.[language].title || selectedCrop?.[language].crop || sellingCrop?.[language].crop}
+                </h2>
+              </div>
+              <Button variant="ghost" size="icon" className="rounded-full" onClick={() => { setSelectedScheme(null); setApplyingScheme(null); setSelectedCrop(null); setSellingCrop(null); }}><X /></Button>
+            </div>
+
+            {selectedScheme && <div className="space-y-3 font-bold"><p className="text-5xl">{selectedScheme[language].icon}</p><p className="inline-flex rounded-full bg-accent/35 px-3 py-1 text-xs font-black text-accent-foreground">{selectedScheme[language].tag}</p><p className="rounded-2xl bg-secondary/35 p-3"><span className="block text-xs uppercase text-muted-foreground">{t.benefit}</span>{selectedScheme[language].benefit}</p><p><span className="text-primary">{t.eligibility}: </span>{selectedScheme[language].eligibility}</p><p className="text-muted-foreground">{selectedScheme[language].description}</p><ol className="list-decimal space-y-1 pl-5 text-muted-foreground"><li>{language === "kn" ? "FRUITS ಐಡಿ ಮತ್ತು ಆಧಾರ್ ಪರಿಶೀಲಿಸಿ" : "Verify FRUITS ID and Aadhaar"}</li><li>{language === "kn" ? "ಭೂಮಿ ಮತ್ತು ಬೆಳೆ ವಿವರಗಳನ್ನು ಸೇರಿಸಿ" : "Add land and crop details"}</li><li>{language === "kn" ? "ಹತ್ತಿರದ ಕೃಷಿ ಕಚೇರಿಗೆ ಸಲ್ಲಿಸಿ" : "Submit through local agriculture office"}</li></ol><Button variant="field" className="w-full rounded-full" onClick={() => { setApplyingScheme(selectedScheme); setSelectedScheme(null); }}>{t.apply}</Button></div>}
+
+            {applyingScheme && <form className="grid gap-3 font-bold"><p className="text-5xl">{applyingScheme[language].icon}</p>{[language === "kn" ? "ಹೆಸರು" : "Name", "Aadhaar", language === "kn" ? "ಕೃಷಿ ಸ್ಥಳ" : "Farm location", language === "kn" ? "ಬೆಳೆ" : "Crop"].map((label) => <label key={label} className="grid gap-1 text-sm"><span>{label}</span><input required defaultValue={label === (language === "kn" ? "ಕೃಷಿ ಸ್ಥಳ" : "Farm location") ? "Mysuru" : ""} className="h-11 rounded-full border border-input bg-background px-4 outline-none focus:ring-2 focus:ring-ring" /></label>)}<Button type="submit" variant="field" className="mt-2 rounded-full">{language === "kn" ? "ಅರ್ಜಿಯನ್ನು ಸಲ್ಲಿಸಿ" : "Submit application"}</Button></form>}
+
+            {selectedCrop && <div className="space-y-4 font-bold"><div className="flex items-center gap-4"><span className="text-6xl">{selectedCrop[language].icon}</span><div><p className="text-2xl">{selectedCrop.flags}</p><p className="text-muted-foreground">{selectedCrop[language].destination}</p></div></div><div className="grid gap-3 sm:grid-cols-3"><p className="rounded-2xl bg-secondary/35 p-3"><span className="block text-xs uppercase text-muted-foreground">Demand</span>{selectedCrop[language].demand}</p><p className="rounded-2xl bg-card p-3 text-success shadow-control"><span className="block text-xs uppercase text-muted-foreground">{t.profit}</span>{selectedCrop[language].profit}</p><p className="rounded-2xl bg-accent/35 p-3"><span className="block text-xs uppercase text-muted-foreground">Tag</span>{selectedCrop[language].tag}</p></div><p><span className="text-primary">{t.reason}: </span>{selectedCrop[language].reason}</p><Button variant="field" className="w-full rounded-full" onClick={() => { setSellingCrop(selectedCrop); setSelectedCrop(null); }}>{language === "kn" ? "ರಫ್ತು ಬೆಳೆ ಮಾರಾಟ" : "Sell Export Produce"}</Button></div>}
+
+            {sellingCrop && <form className="grid gap-3 font-bold"><p className="text-5xl">{sellingCrop[language].icon}</p>{[language === "kn" ? "ರೈತನ ಹೆಸರು" : "Farmer name", language === "kn" ? "ಫೋನ್ ಸಂಖ್ಯೆ" : "Phone number", language === "kn" ? "ಲಭ್ಯ ಪ್ರಮಾಣ" : "Available quantity", language === "kn" ? "ಗ್ರಾಮ / ತಾಲ್ಲೂಕು" : "Village / Taluk"].map((label) => <label key={label} className="grid gap-1 text-sm"><span>{label}</span><input required className="h-11 rounded-full border border-input bg-background px-4 outline-none focus:ring-2 focus:ring-ring" /></label>)}<p className="rounded-2xl bg-secondary/35 p-3 text-sm">{sellingCrop.flags} {sellingCrop[language].destination}</p><Button type="submit" variant="field" className="mt-2 rounded-full">{language === "kn" ? "ಖರೀದಿದಾರರೊಂದಿಗೆ ಸಂಪರ್ಕಿಸಿ" : "Connect with buyers"}</Button></form>}
+          </div>
+        </div>
+      )}
+
+      <div className="fixed bottom-4 left-1/2 z-[900] flex -translate-x-1/2 items-center gap-2 rounded-full border border-glass-border bg-glass/92 p-2 shadow-glass backdrop-blur-panel">
+        <Button variant="ghost" size="icon" className="rounded-full" onClick={() => goRole(-1)}><ArrowLeft /></Button>
+        <Button variant="field" className="rounded-full" onClick={() => goRole(1)}>{role === "home" ? "Start" : role}<ArrowRight /></Button>
+      </div>
     </main>
   );
 };
