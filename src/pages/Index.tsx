@@ -7,7 +7,7 @@ import { KrishiMap } from "@/components/KrishiMap";
 import { getRegionContent, Language, RegionId, regions } from "@/data/krishiMysuru";
 
 type Role = "home" | "farmer" | "buyer" | "labourer";
-type FarmerTab = "overview" | "field" | "market" | "sell" | "fpo" | "labour" | "schemes";
+type FarmerTab = "overview" | "field" | "export" | "market" | "sell" | "fpo" | "labour" | "schemes";
 type SchemeContent = { title: string; benefit: string; eligibility: string; description: string; tag: string; icon: string };
 type Scheme = Record<Language, SchemeContent> & { id: string };
 type ExportCropContent = { crop: string; destination: string; demand: string; profit: string; reason: string; tag: string; icon: string };
@@ -19,7 +19,7 @@ const copy = {
     sub: "A smart farming companion for crops, climate, prices, buyers, labour and schemes.",
     farmer: "I am a Farmer", buyer: "I am a Buyer", labourer: "I am a Labourer", voice: "Voice help",
     stats: ["₹3,250/qtl tomato", "UAE demand ↑", "Ginger best crop"],
-    tabs: { overview: "My Farm", field: "Field Intelligence", market: "Prices", sell: "Sell", fpo: "FPO", labour: "Labour", schemes: "Schemes" },
+    tabs: { overview: "My Farm", field: "Field Intelligence", export: "Export", market: "Prices", sell: "Sell", fpo: "FPO", labour: "Labour", schemes: "Schemes" },
     demand: "High Demand Crops Abroad", climate: "Climate & Prediction", market: "Market Intelligence", direct: "Direct Selling", fpo: "Farmer Groups", labour: "Labour Marketplace", schemes: "Government Schemes",
     best: "Best crop this month", sellNow: "Best time to sell", apply: "Apply now", contact: "Contact farmer", nearby: "Nearby jobs", wage: "Daily wage", track: "Order tracking", browse: "Browse crops",
     benefit: "Benefit", eligibility: "Eligibility", details: "Details", destination: "Target countries", profit: "Profit", reason: "Reason for demand",
@@ -29,7 +29,7 @@ const copy = {
     sub: "ಬೆಳೆ, ಹವಾಮಾನ, ಬೆಲೆ, ಖರೀದಿದಾರರು, ಕಾರ್ಮಿಕರು ಮತ್ತು ಯೋಜನೆಗಳಿಗೆ ಕೃಷಿ ಸಹಾಯಕ.",
     farmer: "ನಾನು ರೈತ", buyer: "ನಾನು ಖರೀದಿದಾರ", labourer: "ನಾನು ಕಾರ್ಮಿಕ", voice: "ಧ್ವನಿ ಸಹಾಯ",
     stats: ["ಟೊಮೆಟೊ ₹3,250/qtl", "UAE ಬೇಡಿಕೆ ↑", "ಶುಂಠಿ ಉತ್ತಮ ಬೆಳೆ"],
-    tabs: { overview: "ನನ್ನ ಕೃಷಿ", field: "ಕ್ಷೇತ್ರ ಮಾಹಿತಿ", market: "ಬೆಲೆಗಳು", sell: "ಮಾರಾಟ", fpo: "FPO", labour: "ಕಾರ್ಮಿಕ", schemes: "ಯೋಜನೆಗಳು" },
+    tabs: { overview: "ನನ್ನ ಕೃಷಿ", field: "ಕ್ಷೇತ್ರ ಮಾಹಿತಿ", export: "ರಫ್ತು", market: "ಬೆಲೆಗಳು", sell: "ಮಾರಾಟ", fpo: "FPO", labour: "ಕಾರ್ಮಿಕ", schemes: "ಯೋಜನೆಗಳು" },
     demand: "ವಿದೇಶದಲ್ಲಿ ಹೆಚ್ಚು ಬೇಡಿಕೆಯ ಬೆಳೆಗಳು", climate: "ಹವಾಮಾನ ಮತ್ತು ಮುನ್ಸೂಚನೆ", market: "ಮಾರುಕಟ್ಟೆ ಮಾಹಿತಿ", direct: "ನೇರ ಮಾರಾಟ", fpo: "ರೈತ ಗುಂಪುಗಳು", labour: "ಕಾರ್ಮಿಕ ಮಾರುಕಟ್ಟೆ", schemes: "ಸರ್ಕಾರಿ ಯೋಜನೆಗಳು",
     best: "ಈ ತಿಂಗಳ ಉತ್ತಮ ಬೆಳೆ", sellNow: "ಮಾರಾಟಕ್ಕೆ ಉತ್ತಮ ಸಮಯ", apply: "ಈಗ ಅರ್ಜಿ", contact: "ರೈತನನ್ನು ಸಂಪರ್ಕಿಸಿ", nearby: "ಹತ್ತಿರದ ಕೆಲಸಗಳು", wage: "ದಿನ ಕೂಲಿ", track: "ಆರ್ಡರ್ ಟ್ರ್ಯಾಕಿಂಗ್", browse: "ಬೆಳೆಗಳನ್ನು ನೋಡಿ",
     benefit: "ಲಾಭ", eligibility: "ಅರ್ಹತೆ", details: "ವಿವರಗಳು", destination: "ಗುರಿ ದೇಶಗಳು", profit: "ಲಾಭ", reason: "ಬೇಡಿಕೆಯ ಕಾರಣ",
@@ -39,7 +39,7 @@ const copy = {
     sub: "फसल, मौसम, कीमत, खरीदार, मजदूर और योजनाओं के लिए स्मार्ट कृषि साथी।",
     farmer: "मैं किसान हूँ", buyer: "मैं खरीदार हूँ", labourer: "मैं मजदूर हूँ", voice: "वॉयस सहायता",
     stats: ["टमाटर ₹3,250/qtl", "UAE मांग ↑", "अदरक श्रेष्ठ फसल"],
-    tabs: { overview: "मेरा खेत", field: "फील्ड इंटेलिजेंस", market: "कीमतें", sell: "बेचना", fpo: "FPO", labour: "मजदूर", schemes: "योजनाएँ" },
+    tabs: { overview: "मेरा खेत", field: "फील्ड इंटेलिजेंस", export: "निर्यात", market: "कीमतें", sell: "बेचना", fpo: "FPO", labour: "मजदूर", schemes: "योजनाएँ" },
     demand: "विदेश में अधिक मांग वाली फसलें", climate: "मौसम और पूर्वानुमान", market: "बाज़ार जानकारी", direct: "सीधी बिक्री", fpo: "किसान समूह", labour: "मजदूर बाज़ार", schemes: "सरकारी योजनाएँ",
     best: "इस महीने की श्रेष्ठ फसल", sellNow: "बेचने का अच्छा समय", apply: "अभी आवेदन", contact: "किसान से संपर्क", nearby: "नज़दीकी काम", wage: "दैनिक मज़दूरी", track: "ऑर्डर ट्रैकिंग", browse: "फसलें देखें",
     benefit: "लाभ", eligibility: "पात्रता", details: "विवरण", destination: "लक्ष्य देश", profit: "लाभ", reason: "मांग का कारण",
@@ -182,6 +182,7 @@ const Index = () => {
             {(Object.keys(t.tabs) as FarmerTab[]).map((tab) => (
               <Button key={tab} variant={farmerTab === tab ? "field" : "glass"} className="rounded-full" onClick={() => setFarmerTab(tab)}>
                 {tab === "field" && <Map />}
+                {tab === "export" && <Package />}
                 {t.tabs[tab]}
               </Button>
             ))}
@@ -227,7 +228,7 @@ const Index = () => {
               })}
               </div>
             </div>
-          ) : (
+          ) : farmerTab === "export" ? (
             <div className="grid gap-4 lg:grid-cols-3">
               <section className="rounded-[1.5rem] border border-glass-border bg-card/88 p-4 shadow-control backdrop-blur-panel lg:col-span-3">
                 <div className="mb-3 flex flex-wrap items-center justify-between gap-3">
@@ -258,7 +259,9 @@ const Index = () => {
                 </div>
               </section>
               {selectedCrop && <Card title={language === "kn" ? "ರಫ್ತು ಪರಿಶೀಲನಾ ಪಟ್ಟಿ" : "Export checklist"} icon={selectedCrop[language].icon}><div className="space-y-3 text-sm font-bold"><p><span className="text-primary">{language === "kn" ? "ಪ್ರಮಾಣಪತ್ರಗಳು" : "Certifications"}: </span>APEDA, FSSAI, Phytosanitary, {selectedCrop[language].tag}</p><p><span className="text-primary">{language === "kn" ? "ಪ್ಯಾಕಿಂಗ್" : "Packaging"}: </span>{language === "kn" ? "ಗ್ರೇಡಿಂಗ್, ತೇವಾಂಶ ನಿಯಂತ್ರಣ, ರಫ್ತು ಲೇಬಲ್" : "Grading, moisture control, export labels and ventilated cartons."}</p><ol className="list-decimal space-y-1 pl-5 text-muted-foreground"><li>{language === "kn" ? "ಖರೀದಿದಾರರನ್ನು ದೃಢೀಕರಿಸಿ" : "Confirm buyer and target market"}</li><li>{language === "kn" ? "ಗುಣಮಟ್ಟ ಪರೀಕ್ಷೆ ಮಾಡಿ" : "Complete quality testing"}</li><li>{language === "kn" ? "ದಾಖಲೆ ಮತ್ತು ಶಿಪ್ಪಿಂಗ್ ಬುಕ್ ಮಾಡಿ" : "Prepare documents and book shipment"}</li></ol></div></Card>}
-              <Card title={t.climate} icon="☀️"><div className="space-y-3 font-bold"><p><CloudSun className="mr-2 inline size-5 text-primary" /> 28-35°C · Rain risk low</p><p className="rounded-2xl bg-accent/35 p-3">{t.best}: Ginger 🫚</p><p className="text-muted-foreground">Best sowing window: 12 days</p></div></Card><Card title={t.market} icon="💰"><div className="h-28"><ResponsiveContainer width="100%" height="100%"><AreaChart data={priceTrend}><Area dataKey="v" type="monotone" stroke="hsl(var(--primary))" fill="hsl(var(--secondary))" strokeWidth={3} /></AreaChart></ResponsiveContainer></div><p className="mt-2 font-black text-primary">{t.sellNow}: 6 days</p></Card><Card title={t.direct} icon="🤝"><Button variant="field" className="w-full rounded-full"><Package />Sell Crop</Button><Button variant="secondaryFarm" className="mt-3 w-full rounded-full"><Phone />Buyer Chat / Call</Button></Card><Card title={t.fpo} icon="🏢"><p className="font-bold text-muted-foreground">Group selling gives better price and bulk export opportunities.</p><Button variant="secondaryFarm" className="mt-4 w-full rounded-full"><Users />Join FPO</Button></Card><Card title={t.labour} icon="🧑‍🌾"><p className="font-black">Need 5 workers for harvest</p><p className="text-sm font-bold text-muted-foreground">Ratings enabled · Nearby labourers</p><Button variant="field" className="mt-4 w-full rounded-full"><Briefcase />Post Job</Button></Card><Card title={t.schemes} icon="🏦"><p className="font-bold">Subsidies · Loans · Eligibility checker</p><Button variant="secondaryFarm" className="mt-4 w-full rounded-full" onClick={() => setFarmerTab("schemes")}>{t.apply}</Button></Card></div>
+            </div>
+          ) : (
+            <div className="grid gap-4 lg:grid-cols-3"><Card title={t.climate} icon="☀️"><div className="space-y-3 font-bold"><p><CloudSun className="mr-2 inline size-5 text-primary" /> 28-35°C · Rain risk low</p><p className="rounded-2xl bg-accent/35 p-3">{t.best}: Ginger 🫚</p><p className="text-muted-foreground">Best sowing window: 12 days</p></div></Card><Card title={t.market} icon="💰"><div className="h-28"><ResponsiveContainer width="100%" height="100%"><AreaChart data={priceTrend}><Area dataKey="v" type="monotone" stroke="hsl(var(--primary))" fill="hsl(var(--secondary))" strokeWidth={3} /></AreaChart></ResponsiveContainer></div><p className="mt-2 font-black text-primary">{t.sellNow}: 6 days</p></Card><Card title={t.direct} icon="🤝"><Button variant="field" className="w-full rounded-full"><Package />Sell Crop</Button><Button variant="secondaryFarm" className="mt-3 w-full rounded-full"><Phone />Buyer Chat / Call</Button></Card><Card title={t.demand} icon="🌍"><p className="font-bold text-muted-foreground">{language === "kn" ? "ವಿದೇಶಿ ಬೇಡಿಕೆ, ಲಾಭ ಮತ್ತು ಖರೀದಿದಾರ ಸಂಪರ್ಕಕ್ಕಾಗಿ ಪ್ರತ್ಯೇಕ ರಫ್ತು ವಿಭಾಗ." : "A dedicated export section for abroad demand, profit signals and buyer connections."}</p><Button variant="field" className="mt-4 w-full rounded-full" onClick={() => setFarmerTab("export")}><Package />Export</Button></Card><Card title={t.fpo} icon="🏢"><p className="font-bold text-muted-foreground">Group selling gives better price and bulk export opportunities.</p><Button variant="secondaryFarm" className="mt-4 w-full rounded-full"><Users />Join FPO</Button></Card><Card title={t.labour} icon="🧑‍🌾"><p className="font-black">Need 5 workers for harvest</p><p className="text-sm font-bold text-muted-foreground">Ratings enabled · Nearby labourers</p><Button variant="field" className="mt-4 w-full rounded-full"><Briefcase />Post Job</Button></Card><Card title={t.schemes} icon="🏦"><p className="font-bold">Subsidies · Loans · Eligibility checker</p><Button variant="secondaryFarm" className="mt-4 w-full rounded-full" onClick={() => setFarmerTab("schemes")}>{t.apply}</Button></Card></div>
           )}
         </section>
       )}
