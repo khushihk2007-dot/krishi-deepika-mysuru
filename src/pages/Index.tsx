@@ -1,5 +1,5 @@
-import { useState } from "react";
-import { Briefcase, Building2, CloudSun, Globe2, Handshake, Leaf, Map, Mic, Package, Phone, ShoppingCart, Sprout, TrendingUp, Users } from "lucide-react";
+import { useMemo, useState } from "react";
+import { ArrowLeft, ArrowRight, Briefcase, CloudSun, Globe2, Leaf, Map, Mic, Package, Phone, Search, ShoppingCart, Sprout, Users, X } from "lucide-react";
 import { Area, AreaChart, ResponsiveContainer } from "recharts";
 import { Button } from "@/components/ui/button";
 import { FieldIntelligencePanel } from "@/components/FieldIntelligencePanel";
@@ -8,6 +8,10 @@ import { getRegionContent, Language, RegionId, regions } from "@/data/krishiMysu
 
 type Role = "home" | "farmer" | "buyer" | "labourer";
 type FarmerTab = "overview" | "field" | "market" | "sell" | "fpo" | "labour" | "schemes";
+type SchemeContent = { title: string; benefit: string; eligibility: string; description: string; tag: string; icon: string };
+type Scheme = Record<Language, SchemeContent> & { id: string };
+type ExportCropContent = { crop: string; destination: string; demand: string; profit: string; reason: string; tag: string; icon: string };
+type ExportCrop = { district: string; id: string; flags: string } & Record<Language, ExportCropContent>;
 
 const copy = {
   en: {
@@ -50,7 +54,7 @@ const exportCrops = [
   { district: "Haveri (Byadgi)", id: "hav_chilli", flags: "🇺🇸 🇪🇺 🌏", en: { crop: "Byadgi Chilli (Oleoresin)", destination: "USA, Europe, Southeast Asia", demand: "Very High", profit: "+55%", reason: "Used for natural food coloring (Oleoresin) with zero heat/pungency.", tag: "Global GI", icon: "🌶️" }, kn: { crop: "ಬ್ಯಾಡಗಿ ಮೆಣಸಿನಕಾಯಿ", destination: "ಅಮೇರಿಕಾ, ಯುರೋಪ್", demand: "ಅತಿ ಹೆಚ್ಚು", profit: "+55%", reason: "ನೈಸರ್ಗಿಕ ಆಹಾರ ಬಣ್ಣ ತಯಾರಿಸಲು ಅಂತರಾಷ್ಟ್ರೀಯ ಮಟ್ಟದಲ್ಲಿ ಬಳಕೆ.", tag: "ಜಾಗತಿಕ ಜಿಐ", icon: "🌶️" }, hi: { crop: "ब्याडगी मिर्च", destination: "अमेरिका, यूरोप, दक्षिण-पूर्व एशिया", demand: "बहुत अधिक", profit: "+55%", reason: "प्राकृतिक food coloring oleoresin के लिए अंतरराष्ट्रीय उपयोग।", tag: "वैश्विक GI", icon: "🌶️" } },
   { district: "Hassan", id: "has_potato", flags: "🇸🇬 🇱🇰", en: { crop: "Processing-Grade Potato", destination: "Singapore, Sri Lanka", demand: "Moderate", profit: "+25%", reason: "High starch content ideal for making chips and processed snacks.", tag: "Value Chain", icon: "🥔" }, kn: { crop: "ಸಂಸ್ಕರಣಾ ದರ್ಜೆಯ ಆಲೂಗಡ್ಡೆ", destination: "ಸಿಂಗಾಪುರ, ಶ್ರೀಲಂಕಾ", demand: "ಮಧ್ಯಮ", profit: "+25%", reason: "ಚಿಪ್ಸ್ ಮತ್ತು ಸಂಸ್ಕರಿಸಿದ ತಿಂಡಿಗಳ ತಯಾರಿಕೆಗೆ ಹೆಚ್ಚು ಸೂಕ್ತ.", tag: "ಮೌಲ್ಯವರ್ಧನೆ", icon: "🥔" }, hi: { crop: "प्रोसेसिंग-ग्रेड आलू", destination: "सिंगापुर, श्रीलंका", demand: "मध्यम", profit: "+25%", reason: "अधिक स्टार्च के कारण chips और processed snacks के लिए उपयुक्त।", tag: "वैल्यू चेन", icon: "🥔" } },
   { district: "Vijayapura/Bagalkot", id: "vij_grapes", flags: "🇳🇱 🇧🇩 🇦🇪", en: { crop: "Seedless Grapes / Pomegranate", destination: "Netherlands, Bangladesh, UAE", demand: "High", profit: "+38%", reason: "Excellent shelf life and size; high sugar content (Brix level).", tag: "Export Quality", icon: "🍇" }, kn: { crop: "ಬೀಜವಿಲ್ಲದ ದ್ರಾಕ್ಷಿ / ದಾಳಿಂಬೆ", destination: "ನೆದರ್ಲ್ಯಾಂಡ್ಸ್, ಬಾಂಗ್ಲಾದೇಶ, ಯುಎಇ", demand: "ಹೆಚ್ಚು", profit: "+38%", reason: "ದೀರ್ಘ ಬಾಳಿಕೆ ಮತ್ತು ಸಿಹಿ ಅಂಶ (Brix level) ಹೆಚ್ಚಿರುವುದರಿಂದ ಬೇಡಿಕೆ.", tag: "ರಫ್ತು ಗುಣಮಟ್ಟ", icon: "🍇" }, hi: { crop: "बीजरहित अंगूर / अनार", destination: "नीदरलैंड, बांग्लादेश, UAE", demand: "अधिक", profit: "+38%", reason: "बेहतरीन shelf life, आकार और अधिक मिठास (Brix level) के कारण मांग।", tag: "निर्यात गुणवत्ता", icon: "🍇" } },
-] satisfies Array<{ district: string; id: string; flags: string } & Record<Language, { crop: string; destination: string; demand: string; profit: string; reason: string; tag: string; icon: string }>>;
+] satisfies ExportCrop[];
 const priceTrend = [{ v: 28 }, { v: 34 }, { v: 31 }, { v: 42 }, { v: 48 }, { v: 54 }, { v: 61 }];
 
 const governmentSchemes = [
@@ -84,13 +88,66 @@ const governmentSchemes = [
 ] satisfies Array<Record<Language, { title: string; benefit: string; eligibility: string; description: string; tag: string; icon: string }> & { id: string }>;
 
 const Index = () => {
-  const [language, setLanguage] = useState<Language>("en");
+  const [language, setLanguageState] = useState<Language>(() => {
+    const saved = localStorage.getItem("krishi-language");
+    return saved === "kn" || saved === "hi" || saved === "en" ? saved : "en";
+  });
+  const [schemeSearch, setSchemeSearch] = useState("");
+  const [schemeCategory, setSchemeCategory] = useState("all");
+  const [schemeEligibility, setSchemeEligibility] = useState("all");
+  const [selectedScheme, setSelectedScheme] = useState<Scheme | null>(null);
+  const [applyingScheme, setApplyingScheme] = useState<Scheme | null>(null);
+  const [exportCountry, setExportCountry] = useState("all");
+  const [exportDemand, setExportDemand] = useState("all");
+  const [exportProfit, setExportProfit] = useState("all");
+  const [selectedCrop, setSelectedCrop] = useState<ExportCrop | null>(null);
+  const [sellingCrop, setSellingCrop] = useState<ExportCrop | null>(null);
   const [role, setRole] = useState<Role>("home");
   const [farmerTab, setFarmerTab] = useState<FarmerTab>("overview");
   const [selectedId, setSelectedId] = useState<RegionId>("gokulam");
   const selectedRegion = regions[selectedId];
+  const roles: Role[] = ["home", "farmer", "labourer", "buyer"];
+  const roleIndex = roles.indexOf(role);
+  const goRole = (direction: -1 | 1) => setRole(roles[(roleIndex + direction + roles.length) % roles.length]);
   const selectedContent = getRegionContent(selectedRegion, selectedId, language);
   const t = copy[language];
+
+  const setLanguage = (lng: Language) => {
+    setLanguageState(lng);
+    localStorage.setItem("krishi-language", lng);
+  };
+
+  const schemeCategories = useMemo(() => ["all", ...Array.from(new Set(governmentSchemes.map((scheme) => scheme[language].tag)))], [language]);
+  const schemeEligibilityOptions = useMemo(() => ["all", ...Array.from(new Set(governmentSchemes.map((scheme) => scheme[language].eligibility)))], [language]);
+  const filteredSchemes = governmentSchemes.filter((scheme) => {
+    const content = scheme[language];
+    const haystack = `${content.title} ${content.benefit} ${content.eligibility} ${content.description} ${content.tag}`.toLowerCase();
+    return (
+      haystack.includes(schemeSearch.toLowerCase()) &&
+      (schemeCategory === "all" || content.tag === schemeCategory) &&
+      (schemeEligibility === "all" || content.eligibility === schemeEligibility)
+    );
+  });
+
+  const countryOptions = useMemo(() => ["all", "UAE", "Europe", "USA", "Japan", "Middle East", "Southeast Asia"], []);
+  const demandOptions = useMemo(() => ["all", "Very High", "High", "Moderate", "Stable/Premium"], []);
+  const filteredExportCrops = exportCrops.filter((crop) => {
+    const content = crop[language];
+    const profitValue = Number(content.profit.replace(/[^0-9]/g, ""));
+    return (
+      (exportCountry === "all" || content.destination.toLowerCase().includes(exportCountry.toLowerCase())) &&
+      (exportDemand === "all" || crop.en.demand === exportDemand || content.demand === exportDemand) &&
+      (exportProfit === "all" || profitValue >= Number(exportProfit))
+    );
+  });
+
+  const getSeasonBadge = (cropId: string) => {
+    const month = new Date().getMonth();
+    const summer = month >= 2 && month <= 5;
+    const monsoon = month >= 5 && month <= 9;
+    const badge = cropId.includes("banana") || cropId.includes("turmeric") ? (monsoon ? "Best season · low risk" : "Irrigation needed") : summer ? "Harvest window · heat risk" : "Export-ready window";
+    return language === "kn" ? badge.replace("Best season · low risk", "ಉತ್ತಮ ಋತು · ಕಡಿಮೆ ಅಪಾಯ").replace("Irrigation needed", "ನೀರಾವರಿ ಅಗತ್ಯ").replace("Harvest window · heat risk", "ಕೊಯ್ಲು ಸಮಯ · ಬಿಸಿಲಿನ ಅಪಾಯ").replace("Export-ready window", "ರಫ್ತು ಸಿದ್ಧ ಸಮಯ") : badge;
+  };
 
   const Card = ({ title, icon, children }: { title: string; icon: string; children: React.ReactNode }) => (
     <section className="rounded-[1.5rem] border border-glass-border bg-card/88 p-4 shadow-control backdrop-blur-panel">
@@ -141,8 +198,14 @@ const Index = () => {
               <FieldIntelligencePanel region={selectedRegion} regionId={selectedId} language={language} />
             </div>
           ) : farmerTab === "schemes" ? (
-            <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
-              {governmentSchemes.map((scheme) => {
+            <div className="space-y-4">
+              <div className="grid gap-3 rounded-[1.5rem] border border-glass-border bg-card/90 p-4 shadow-control backdrop-blur-panel md:grid-cols-[1fr_220px_220px]">
+                <label className="relative"><Search className="absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" /><input value={schemeSearch} onChange={(e) => setSchemeSearch(e.target.value)} placeholder={language === "kn" ? "ವಿಮೆ, ಸೌರ... ಹುಡುಕಿ" : "Search insurance, solar..."} className="h-11 w-full rounded-full border border-input bg-background pl-10 pr-4 text-sm font-bold outline-none focus:ring-2 focus:ring-ring" /></label>
+                <select value={schemeCategory} onChange={(e) => setSchemeCategory(e.target.value)} className="h-11 rounded-full border border-input bg-background px-4 text-sm font-bold"><option value="all">{language === "kn" ? "ಎಲ್ಲಾ ವರ್ಗಗಳು" : "All categories"}</option>{schemeCategories.slice(1).map((item) => <option key={item} value={item}>{item}</option>)}</select>
+                <select value={schemeEligibility} onChange={(e) => setSchemeEligibility(e.target.value)} className="h-11 rounded-full border border-input bg-background px-4 text-sm font-bold"><option value="all">{language === "kn" ? "ಎಲ್ಲಾ ಅರ್ಹತೆ" : "All eligibility"}</option>{schemeEligibilityOptions.slice(1).map((item) => <option key={item} value={item}>{item}</option>)}</select>
+              </div>
+              <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
+              {filteredSchemes.map((scheme) => {
                 const content = scheme[language];
                 return (
                   <article key={scheme.id} className="rounded-[1.5rem] border border-glass-border bg-card/90 p-4 shadow-control backdrop-blur-panel">
@@ -158,13 +221,44 @@ const Index = () => {
                       <p><span className="font-black text-primary">{t.eligibility}: </span>{content.eligibility}</p>
                       <p className="text-muted-foreground"><span className="font-black text-foreground">{t.details}: </span>{content.description}</p>
                     </div>
-                    <Button variant="field" className="mt-4 w-full rounded-full">{t.apply}</Button>
+                    <div className="mt-4 grid grid-cols-2 gap-2"><Button variant="secondaryFarm" className="rounded-full" onClick={() => setSelectedScheme(scheme)}>{t.details}</Button><Button variant="field" className="rounded-full" onClick={() => setApplyingScheme(scheme)}>{t.apply}</Button></div>
                   </article>
                 );
               })}
+              </div>
             </div>
           ) : (
-            <div className="grid gap-4 lg:grid-cols-3"><section className="rounded-[1.5rem] border border-glass-border bg-card/88 p-4 shadow-control backdrop-blur-panel lg:col-span-3"><div className="mb-3 flex items-center gap-2"><span className="text-2xl">🌱</span><h2 className="font-display text-lg font-black">{t.demand}</h2></div><div className="flex gap-3 overflow-x-auto pb-2">{exportCrops.map((crop) => { const c = crop[language]; return <article key={crop.id} className="w-[285px] shrink-0 rounded-[1.25rem] border border-glass-border bg-secondary/25 p-4"><div className="mb-3 flex items-start justify-between gap-3"><span className="text-4xl">{c.icon}</span><b className="rounded-full bg-card px-3 py-1 text-success shadow-control">{c.profit}</b></div><p className="mb-1 inline-flex rounded-full bg-accent/35 px-3 py-1 text-xs font-black text-accent-foreground">{c.tag}</p><h3 className="mt-2 font-display text-lg font-black leading-tight">{c.crop}</h3><p className="mt-1 text-xs font-black uppercase text-muted-foreground">{crop.district}</p><div className="mt-3 rounded-2xl bg-card/75 p-3"><p className="text-lg">{crop.flags}</p><p className="text-sm font-bold text-muted-foreground">{c.destination}</p></div><p className="mt-3 text-sm font-bold"><span className="text-primary">{t.reason}: </span>{c.reason}</p></article>; })}</div></section><Card title={t.climate} icon="☀️"><div className="space-y-3 font-bold"><p><CloudSun className="mr-2 inline size-5 text-primary" /> 28-35°C · Rain risk low</p><p className="rounded-2xl bg-accent/35 p-3">{t.best}: Ginger 🫚</p><p className="text-muted-foreground">Best sowing window: 12 days</p></div></Card><Card title={t.market} icon="💰"><div className="h-28"><ResponsiveContainer width="100%" height="100%"><AreaChart data={priceTrend}><Area dataKey="v" type="monotone" stroke="hsl(var(--primary))" fill="hsl(var(--secondary))" strokeWidth={3} /></AreaChart></ResponsiveContainer></div><p className="mt-2 font-black text-primary">{t.sellNow}: 6 days</p></Card><Card title={t.direct} icon="🤝"><Button variant="field" className="w-full rounded-full"><Package />Sell Crop</Button><Button variant="secondaryFarm" className="mt-3 w-full rounded-full"><Phone />Buyer Chat / Call</Button></Card><Card title={t.fpo} icon="🏢"><p className="font-bold text-muted-foreground">Group selling gives better price and bulk export opportunities.</p><Button variant="secondaryFarm" className="mt-4 w-full rounded-full"><Users />Join FPO</Button></Card><Card title={t.labour} icon="🧑‍🌾"><p className="font-black">Need 5 workers for harvest</p><p className="text-sm font-bold text-muted-foreground">Ratings enabled · Nearby labourers</p><Button variant="field" className="mt-4 w-full rounded-full"><Briefcase />Post Job</Button></Card><Card title={t.schemes} icon="🏦"><p className="font-bold">Subsidies · Loans · Eligibility checker</p><Button variant="secondaryFarm" className="mt-4 w-full rounded-full" onClick={() => setFarmerTab("schemes")}>{t.apply}</Button></Card></div>
+            <div className="grid gap-4 lg:grid-cols-3">
+              <section className="rounded-[1.5rem] border border-glass-border bg-card/88 p-4 shadow-control backdrop-blur-panel lg:col-span-3">
+                <div className="mb-3 flex flex-wrap items-center justify-between gap-3">
+                  <div className="flex items-center gap-2"><span className="text-2xl">🌱</span><h2 className="font-display text-lg font-black">{t.demand}</h2></div>
+                  <div className="flex flex-wrap gap-2">
+                    <select value={exportCountry} onChange={(e) => setExportCountry(e.target.value)} className="h-10 rounded-full border border-input bg-background px-3 text-sm font-bold"><option value="all">{language === "kn" ? "ಎಲ್ಲಾ ದೇಶಗಳು" : "All markets"}</option>{countryOptions.slice(1).map((item) => <option key={item} value={item}>{item}</option>)}</select>
+                    <select value={exportDemand} onChange={(e) => setExportDemand(e.target.value)} className="h-10 rounded-full border border-input bg-background px-3 text-sm font-bold"><option value="all">{language === "kn" ? "ಎಲ್ಲಾ ಬೇಡಿಕೆ" : "All demand"}</option>{demandOptions.slice(1).map((item) => <option key={item} value={item}>{item}</option>)}</select>
+                    <select value={exportProfit} onChange={(e) => setExportProfit(e.target.value)} className="h-10 rounded-full border border-input bg-background px-3 text-sm font-bold"><option value="all">{language === "kn" ? "ಎಲ್ಲಾ ಲಾಭ" : "All profit"}</option><option value="35">35%+</option><option value="45">45%+</option><option value="50">50%+</option></select>
+                  </div>
+                </div>
+                <div className="flex gap-3 overflow-x-auto pb-2">
+                  {filteredExportCrops.map((crop) => {
+                    const c = crop[language];
+                    return (
+                      <article key={crop.id} className="w-[300px] shrink-0 rounded-[1.25rem] border border-glass-border bg-secondary/25 p-4 shadow-control">
+                        <button className="w-full text-left" onClick={() => setSelectedCrop(crop)}>
+                          <div className="mb-3 flex items-start justify-between gap-3"><span className="text-4xl">{c.icon}</span><b className="rounded-full bg-card px-3 py-1 text-success shadow-control">{c.profit}</b></div>
+                          <div className="flex flex-wrap gap-2"><p className="inline-flex rounded-full bg-accent/35 px-3 py-1 text-xs font-black text-accent-foreground">{c.tag}</p><p className="inline-flex rounded-full bg-card px-3 py-1 text-xs font-black text-primary">{getSeasonBadge(crop.id)}</p></div>
+                          <h3 className="mt-2 font-display text-lg font-black leading-tight">{c.crop}</h3>
+                          <p className="mt-1 text-xs font-black uppercase text-muted-foreground">{crop.district}</p>
+                          <div className="mt-3 rounded-2xl bg-card/75 p-3"><p className="text-lg">{crop.flags}</p><p className="text-sm font-bold text-muted-foreground">{c.destination}</p></div>
+                          <p className="mt-3 line-clamp-3 text-sm font-bold"><span className="text-primary">{t.reason}: </span>{c.reason}</p>
+                        </button>
+                        <Button variant="field" className="mt-4 w-full rounded-full" onClick={() => setSellingCrop(crop)}>{language === "kn" ? "ರಫ್ತು ಬೆಳೆ ಮಾರಾಟ" : "Sell Export Produce"}</Button>
+                      </article>
+                    );
+                  })}
+                </div>
+              </section>
+              {selectedCrop && <Card title={language === "kn" ? "ರಫ್ತು ಪರಿಶೀಲನಾ ಪಟ್ಟಿ" : "Export checklist"} icon={selectedCrop[language].icon}><div className="space-y-3 text-sm font-bold"><p><span className="text-primary">{language === "kn" ? "ಪ್ರಮಾಣಪತ್ರಗಳು" : "Certifications"}: </span>APEDA, FSSAI, Phytosanitary, {selectedCrop[language].tag}</p><p><span className="text-primary">{language === "kn" ? "ಪ್ಯಾಕಿಂಗ್" : "Packaging"}: </span>{language === "kn" ? "ಗ್ರೇಡಿಂಗ್, ತೇವಾಂಶ ನಿಯಂತ್ರಣ, ರಫ್ತು ಲೇಬಲ್" : "Grading, moisture control, export labels and ventilated cartons."}</p><ol className="list-decimal space-y-1 pl-5 text-muted-foreground"><li>{language === "kn" ? "ಖರೀದಿದಾರರನ್ನು ದೃಢೀಕರಿಸಿ" : "Confirm buyer and target market"}</li><li>{language === "kn" ? "ಗುಣಮಟ್ಟ ಪರೀಕ್ಷೆ ಮಾಡಿ" : "Complete quality testing"}</li><li>{language === "kn" ? "ದಾಖಲೆ ಮತ್ತು ಶಿಪ್ಪಿಂಗ್ ಬುಕ್ ಮಾಡಿ" : "Prepare documents and book shipment"}</li></ol></div></Card>}
+              <Card title={t.climate} icon="☀️"><div className="space-y-3 font-bold"><p><CloudSun className="mr-2 inline size-5 text-primary" /> 28-35°C · Rain risk low</p><p className="rounded-2xl bg-accent/35 p-3">{t.best}: Ginger 🫚</p><p className="text-muted-foreground">Best sowing window: 12 days</p></div></Card><Card title={t.market} icon="💰"><div className="h-28"><ResponsiveContainer width="100%" height="100%"><AreaChart data={priceTrend}><Area dataKey="v" type="monotone" stroke="hsl(var(--primary))" fill="hsl(var(--secondary))" strokeWidth={3} /></AreaChart></ResponsiveContainer></div><p className="mt-2 font-black text-primary">{t.sellNow}: 6 days</p></Card><Card title={t.direct} icon="🤝"><Button variant="field" className="w-full rounded-full"><Package />Sell Crop</Button><Button variant="secondaryFarm" className="mt-3 w-full rounded-full"><Phone />Buyer Chat / Call</Button></Card><Card title={t.fpo} icon="🏢"><p className="font-bold text-muted-foreground">Group selling gives better price and bulk export opportunities.</p><Button variant="secondaryFarm" className="mt-4 w-full rounded-full"><Users />Join FPO</Button></Card><Card title={t.labour} icon="🧑‍🌾"><p className="font-black">Need 5 workers for harvest</p><p className="text-sm font-bold text-muted-foreground">Ratings enabled · Nearby labourers</p><Button variant="field" className="mt-4 w-full rounded-full"><Briefcase />Post Job</Button></Card><Card title={t.schemes} icon="🏦"><p className="font-bold">Subsidies · Loans · Eligibility checker</p><Button variant="secondaryFarm" className="mt-4 w-full rounded-full" onClick={() => setFarmerTab("schemes")}>{t.apply}</Button></Card></div>
           )}
         </section>
       )}
@@ -172,6 +266,35 @@ const Index = () => {
       {role === "buyer" && <section className="mx-auto grid max-w-7xl gap-4 px-4 py-6 lg:grid-cols-3"><Card title={t.browse} icon="🛒"><p className="font-bold text-muted-foreground">Filter by location, quantity and price.</p></Card><Card title="Bulk purchase via FPO" icon="🏢"><p className="font-bold text-muted-foreground">Sugarcane · Tomato · Ginger lots ready.</p></Card><Card title={t.track} icon="📦"><p className="font-bold text-muted-foreground">Order #KM-204 reaches tomorrow.</p><Button variant="field" className="mt-4 w-full rounded-full">{t.contact}</Button></Card></section>}
 
       {role === "labourer" && <section className="mx-auto grid max-w-7xl gap-4 px-4 py-6 lg:grid-cols-3"><Card title={t.nearby} icon="👷"><p className="font-black">Harvest work · Nanjangud</p><p className="text-sm font-bold text-muted-foreground">5 km away · Apply with 1 click</p></Card><Card title={t.wage} icon="💰"><p className="font-display text-3xl font-black text-primary">₹650/day</p><p className="font-bold text-muted-foreground">Current local average</p></Card><Card title="Work history + ratings" icon="⭐"><p className="font-display text-3xl font-black text-primary">4.8/5</p><Button variant="field" className="mt-4 w-full rounded-full">Apply now</Button></Card></section>}
+
+      {(selectedScheme || applyingScheme || selectedCrop || sellingCrop) && (
+        <div className="fixed inset-0 z-[1200] flex items-center justify-center bg-foreground/35 p-4 backdrop-blur-sm">
+          <div className="max-h-[88svh] w-full max-w-2xl overflow-y-auto rounded-[1.75rem] border border-glass-border bg-card p-5 shadow-glass">
+            <div className="mb-4 flex items-start justify-between gap-3">
+              <div>
+                <p className="text-xs font-black uppercase text-muted-foreground">Krishi-Mysuru</p>
+                <h2 className="font-display text-2xl font-black">
+                  {selectedScheme?.[language].title || applyingScheme?.[language].title || selectedCrop?.[language].crop || sellingCrop?.[language].crop}
+                </h2>
+              </div>
+              <Button variant="ghost" size="icon" className="rounded-full" onClick={() => { setSelectedScheme(null); setApplyingScheme(null); setSelectedCrop(null); setSellingCrop(null); }}><X /></Button>
+            </div>
+
+            {selectedScheme && <div className="space-y-3 font-bold"><p className="text-5xl">{selectedScheme[language].icon}</p><p className="inline-flex rounded-full bg-accent/35 px-3 py-1 text-xs font-black text-accent-foreground">{selectedScheme[language].tag}</p><p className="rounded-2xl bg-secondary/35 p-3"><span className="block text-xs uppercase text-muted-foreground">{t.benefit}</span>{selectedScheme[language].benefit}</p><p><span className="text-primary">{t.eligibility}: </span>{selectedScheme[language].eligibility}</p><p className="text-muted-foreground">{selectedScheme[language].description}</p><ol className="list-decimal space-y-1 pl-5 text-muted-foreground"><li>{language === "kn" ? "FRUITS ಐಡಿ ಮತ್ತು ಆಧಾರ್ ಪರಿಶೀಲಿಸಿ" : "Verify FRUITS ID and Aadhaar"}</li><li>{language === "kn" ? "ಭೂಮಿ ಮತ್ತು ಬೆಳೆ ವಿವರಗಳನ್ನು ಸೇರಿಸಿ" : "Add land and crop details"}</li><li>{language === "kn" ? "ಹತ್ತಿರದ ಕೃಷಿ ಕಚೇರಿಗೆ ಸಲ್ಲಿಸಿ" : "Submit through local agriculture office"}</li></ol><Button variant="field" className="w-full rounded-full" onClick={() => { setApplyingScheme(selectedScheme); setSelectedScheme(null); }}>{t.apply}</Button></div>}
+
+            {applyingScheme && <form className="grid gap-3 font-bold"><p className="text-5xl">{applyingScheme[language].icon}</p>{[language === "kn" ? "ಹೆಸರು" : "Name", "Aadhaar", language === "kn" ? "ಕೃಷಿ ಸ್ಥಳ" : "Farm location", language === "kn" ? "ಬೆಳೆ" : "Crop"].map((label) => <label key={label} className="grid gap-1 text-sm"><span>{label}</span><input required defaultValue={label === (language === "kn" ? "ಕೃಷಿ ಸ್ಥಳ" : "Farm location") ? "Mysuru" : ""} className="h-11 rounded-full border border-input bg-background px-4 outline-none focus:ring-2 focus:ring-ring" /></label>)}<Button type="submit" variant="field" className="mt-2 rounded-full">{language === "kn" ? "ಅರ್ಜಿಯನ್ನು ಸಲ್ಲಿಸಿ" : "Submit application"}</Button></form>}
+
+            {selectedCrop && <div className="space-y-4 font-bold"><div className="flex items-center gap-4"><span className="text-6xl">{selectedCrop[language].icon}</span><div><p className="text-2xl">{selectedCrop.flags}</p><p className="text-muted-foreground">{selectedCrop[language].destination}</p></div></div><div className="grid gap-3 sm:grid-cols-3"><p className="rounded-2xl bg-secondary/35 p-3"><span className="block text-xs uppercase text-muted-foreground">Demand</span>{selectedCrop[language].demand}</p><p className="rounded-2xl bg-card p-3 text-success shadow-control"><span className="block text-xs uppercase text-muted-foreground">{t.profit}</span>{selectedCrop[language].profit}</p><p className="rounded-2xl bg-accent/35 p-3"><span className="block text-xs uppercase text-muted-foreground">Tag</span>{selectedCrop[language].tag}</p></div><p><span className="text-primary">{t.reason}: </span>{selectedCrop[language].reason}</p><Button variant="field" className="w-full rounded-full" onClick={() => { setSellingCrop(selectedCrop); setSelectedCrop(null); }}>{language === "kn" ? "ರಫ್ತು ಬೆಳೆ ಮಾರಾಟ" : "Sell Export Produce"}</Button></div>}
+
+            {sellingCrop && <form className="grid gap-3 font-bold"><p className="text-5xl">{sellingCrop[language].icon}</p>{[language === "kn" ? "ರೈತನ ಹೆಸರು" : "Farmer name", language === "kn" ? "ಫೋನ್ ಸಂಖ್ಯೆ" : "Phone number", language === "kn" ? "ಲಭ್ಯ ಪ್ರಮಾಣ" : "Available quantity", language === "kn" ? "ಗ್ರಾಮ / ತಾಲ್ಲೂಕು" : "Village / Taluk"].map((label) => <label key={label} className="grid gap-1 text-sm"><span>{label}</span><input required className="h-11 rounded-full border border-input bg-background px-4 outline-none focus:ring-2 focus:ring-ring" /></label>)}<p className="rounded-2xl bg-secondary/35 p-3 text-sm">{sellingCrop.flags} {sellingCrop[language].destination}</p><Button type="submit" variant="field" className="mt-2 rounded-full">{language === "kn" ? "ಖರೀದಿದಾರರೊಂದಿಗೆ ಸಂಪರ್ಕಿಸಿ" : "Connect with buyers"}</Button></form>}
+          </div>
+        </div>
+      )}
+
+      <div className="fixed bottom-4 left-1/2 z-[900] flex -translate-x-1/2 items-center gap-2 rounded-full border border-glass-border bg-glass/92 p-2 shadow-glass backdrop-blur-panel">
+        <Button variant="ghost" size="icon" className="rounded-full" onClick={() => goRole(-1)}><ArrowLeft /></Button>
+        <Button variant="field" className="rounded-full" onClick={() => goRole(1)}>{role === "home" ? "Start" : role}<ArrowRight /></Button>
+      </div>
     </main>
   );
 };
