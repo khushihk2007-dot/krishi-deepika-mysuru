@@ -126,15 +126,33 @@ const Index = () => {
   const [theme, setTheme] = useState<"light" | "dark">(() => localStorage.getItem("krishi-theme") === "dark" ? "dark" : "light");
   const [fieldPanelOpen, setFieldPanelOpen] = useState(false);
   const [labourJobs, setLabourJobs] = useState<LabourJob[]>(initialLabourJobs);
+  const [authStep, setAuthStep] = useState<"phone" | "otp" | "success" | "register">("phone");
+  const [phoneNumber, setPhoneNumber] = useState("");
+  const [otp, setOtp] = useState(Array(6).fill(""));
+  const [resendTimer, setResendTimer] = useState(60);
+  const [farmerProfile, setFarmerProfile] = useState({ name: "", district: "Mysuru", crop: "Tomato", fid: "" });
   const selectedRegion = regions[selectedId];
   const selectedContent = getRegionContent(selectedRegion, selectedId, language);
   const t = copy[language];
   const labourLabels = labourCopy[language];
+  const login = loginLabels[language];
 
   useEffect(() => {
     document.documentElement.classList.toggle("dark", theme === "dark");
     localStorage.setItem("krishi-theme", theme);
   }, [theme]);
+
+  useEffect(() => {
+    if (authStep !== "otp" || resendTimer <= 0) return;
+    const timer = window.setTimeout(() => setResendTimer((value) => value - 1), 1000);
+    return () => window.clearTimeout(timer);
+  }, [authStep, resendTimer]);
+
+  useEffect(() => {
+    if (authStep !== "success") return;
+    const timer = window.setTimeout(() => navigateTo("farmerProfile"), 1300);
+    return () => window.clearTimeout(timer);
+  }, [authStep]);
 
   const navigateTo = (nextRole: Role, nextTab = farmerTab) => {
     setHistory((items) => [...items, { role, farmerTab }].slice(-12));
@@ -149,6 +167,16 @@ const Index = () => {
     setFarmerTab(previous.farmerTab);
   };
   const handleApplyJob = (id: number) => setLabourJobs((jobs) => jobs.map((job) => job.id === id ? { ...job, isApplied: true, filledSlots: Math.min(job.totalSlots, job.filledSlots + 1) } : job));
+  const requestOtp = () => {
+    setAuthStep("otp");
+    setResendTimer(60);
+  };
+  const verifyOtp = () => setAuthStep("success");
+  const updateOtp = (index: number, value: string) => setOtp((digits) => digits.map((digit, current) => current === index ? value.replace(/\D/g, "").slice(-1) : digit));
+  const startFarmerLogin = () => {
+    setAuthStep("phone");
+    navigateTo("farmerAuth");
+  };
 
   const setLanguage = (lng: Language) => {
     setLanguageState(lng);
