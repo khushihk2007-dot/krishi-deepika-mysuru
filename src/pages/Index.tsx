@@ -1,5 +1,5 @@
-import { useMemo, useState } from "react";
-import { ArrowLeft, ArrowRight, Briefcase, CloudSun, Globe2, Leaf, Map, Mic, Package, Phone, Search, ShoppingCart, Sprout, Users, X } from "lucide-react";
+import { useEffect, useMemo, useState } from "react";
+import { ArrowLeft, Briefcase, Calendar, CheckCircle, CloudSun, Globe2, IndianRupee, Leaf, Map, MapPin, Mic, Moon, Package, Phone, Search, ShoppingCart, Sprout, Sun, Users, X } from "lucide-react";
 import { Area, AreaChart, ResponsiveContainer } from "recharts";
 import { Button } from "@/components/ui/button";
 import { FieldIntelligencePanel } from "@/components/FieldIntelligencePanel";
@@ -8,10 +8,12 @@ import { getRegionContent, Language, RegionId, regions } from "@/data/krishiMysu
 
 type Role = "home" | "farmer" | "buyer" | "labourer";
 type FarmerTab = "overview" | "field" | "export" | "market" | "sell" | "fpo" | "labour" | "schemes";
+type ViewState = { role: Role; farmerTab: FarmerTab };
 type SchemeContent = { title: string; benefit: string; eligibility: string; description: string; tag: string; icon: string };
 type Scheme = Record<Language, SchemeContent> & { id: string };
 type ExportCropContent = { crop: string; destination: string; demand: string; profit: string; reason: string; tag: string; icon: string };
 type ExportCrop = { district: string; id: string; flags: string } & Record<Language, ExportCropContent>;
+type LabourJob = { id: number; title: Record<"en" | "kn", string>; location: Record<"en" | "kn", string>; wage: string; date: string; totalSlots: number; filledSlots: number; isApplied: boolean };
 
 const copy = {
   en: {
@@ -56,6 +58,15 @@ const exportCrops = [
   { district: "Vijayapura/Bagalkot", id: "vij_grapes", flags: "🇳🇱 🇧🇩 🇦🇪", en: { crop: "Seedless Grapes / Pomegranate", destination: "Netherlands, Bangladesh, UAE", demand: "High", profit: "+38%", reason: "Excellent shelf life and size; high sugar content (Brix level).", tag: "Export Quality", icon: "🍇" }, kn: { crop: "ಬೀಜವಿಲ್ಲದ ದ್ರಾಕ್ಷಿ / ದಾಳಿಂಬೆ", destination: "ನೆದರ್ಲ್ಯಾಂಡ್ಸ್, ಬಾಂಗ್ಲಾದೇಶ, ಯುಎಇ", demand: "ಹೆಚ್ಚು", profit: "+38%", reason: "ದೀರ್ಘ ಬಾಳಿಕೆ ಮತ್ತು ಸಿಹಿ ಅಂಶ (Brix level) ಹೆಚ್ಚಿರುವುದರಿಂದ ಬೇಡಿಕೆ.", tag: "ರಫ್ತು ಗುಣಮಟ್ಟ", icon: "🍇" }, hi: { crop: "बीजरहित अंगूर / अनार", destination: "नीदरलैंड, बांग्लादेश, UAE", demand: "अधिक", profit: "+38%", reason: "बेहतरीन shelf life, आकार और अधिक मिठास (Brix level) के कारण मांग।", tag: "निर्यात गुणवत्ता", icon: "🍇" } },
 ] satisfies ExportCrop[];
 const priceTrend = [{ v: 28 }, { v: 34 }, { v: 31 }, { v: 42 }, { v: 48 }, { v: 54 }, { v: 61 }];
+const initialLabourJobs: LabourJob[] = [
+  { id: 1, title: { en: "Banana Harvesting", kn: "ಬಾಳೆಹಣ್ಣು ಕೊಯ್ಲು" }, location: { en: "Nanjangud, Mysuru", kn: "ನಂಜನಗೂಡು, ಮೈಸೂರು" }, wage: "650", date: "2026-05-12", totalSlots: 10, filledSlots: 7, isApplied: false },
+  { id: 2, title: { en: "Coffee Bean Picking", kn: "ಕಾಫಿ ಬೀಜ ಆರಿಸುವುದು" }, location: { en: "Somwarpet, Kodagu", kn: "ಸೋಮವಾರಪೇಟೆ, ಕೊಡಗು" }, wage: "550", date: "2026-05-15", totalSlots: 20, filledSlots: 18, isApplied: false },
+];
+const labourCopy = {
+  en: { wage: "per day", apply: "Apply Now", applied: "Applied", slots: "Slots Left", find: "Find Nearby Work" },
+  kn: { wage: "ಪ್ರತಿದಿನ", apply: "ಈಗಲೇ ಅನ್ವಯಿಸಿ", applied: "ಅನ್ವಯಿಸಲಾಗಿದೆ", slots: "ಖಾಲಿ ಇರುವ ಸ್ಥಾನಗಳು", find: "ಹತ್ತಿರದ ಕೆಲಸ ಹುಡುಕಿ" },
+  hi: { wage: "per day", apply: "Apply Now", applied: "Applied", slots: "Slots Left", find: "Find Nearby Work" },
+} as const;
 
 const governmentSchemes = [
   { id: "pm_kisan", en: { title: "PM-KISAN", benefit: "₹6,000 yearly", eligibility: "Landholding farmers", description: "Direct income support in 3 equal installments.", tag: "Central Sector", icon: "💰" }, kn: { title: "ಪಿಎಂ-ಕಿಸಾನ್", benefit: "ವರ್ಷಕ್ಕೆ ₹6,000", eligibility: "ಭೂಮಿ ಹೊಂದಿರುವ ರೈತರು", description: "3 ಸಮಾನ ಕಂತುಗಳಲ್ಲಿ ನೇರ ಆದಾಯ ಬೆಂಬಲ.", tag: "ಕೇಂದ್ರ ವಲಯ", icon: "💰" }, hi: { title: "पीएम-किसान", benefit: "₹6,000 प्रति वर्ष", eligibility: "भूमि रखने वाले किसान", description: "3 समान किस्तों में सीधा आय समर्थन।", tag: "केंद्रीय क्षेत्र", icon: "💰" } },
@@ -105,12 +116,33 @@ const Index = () => {
   const [role, setRole] = useState<Role>("home");
   const [farmerTab, setFarmerTab] = useState<FarmerTab>("overview");
   const [selectedId, setSelectedId] = useState<RegionId>("gokulam");
+  const [history, setHistory] = useState<ViewState[]>([]);
+  const [theme, setTheme] = useState<"light" | "dark">(() => localStorage.getItem("krishi-theme") === "dark" ? "dark" : "light");
+  const [fieldPanelOpen, setFieldPanelOpen] = useState(false);
+  const [labourJobs, setLabourJobs] = useState<LabourJob[]>(initialLabourJobs);
   const selectedRegion = regions[selectedId];
-  const roles: Role[] = ["home", "farmer", "labourer", "buyer"];
-  const roleIndex = roles.indexOf(role);
-  const goRole = (direction: -1 | 1) => setRole(roles[(roleIndex + direction + roles.length) % roles.length]);
   const selectedContent = getRegionContent(selectedRegion, selectedId, language);
   const t = copy[language];
+  const labourLabels = labourCopy[language];
+
+  useEffect(() => {
+    document.documentElement.classList.toggle("dark", theme === "dark");
+    localStorage.setItem("krishi-theme", theme);
+  }, [theme]);
+
+  const navigateTo = (nextRole: Role, nextTab = farmerTab) => {
+    setHistory((items) => [...items, { role, farmerTab }].slice(-12));
+    setRole(nextRole);
+    if (nextRole === "farmer") setFarmerTab(nextTab);
+  };
+  const goBack = () => {
+    const previous = history[history.length - 1];
+    if (!previous) return;
+    setHistory((items) => items.slice(0, -1));
+    setRole(previous.role);
+    setFarmerTab(previous.farmerTab);
+  };
+  const handleApplyJob = (id: number) => setLabourJobs((jobs) => jobs.map((job) => job.id === id ? { ...job, isApplied: true, filledSlots: Math.min(job.totalSlots, job.filledSlots + 1) } : job));
 
   const setLanguage = (lng: Language) => {
     setLanguageState(lng);
@@ -157,9 +189,9 @@ const Index = () => {
 
   const roleButtons = (
     <div className="grid gap-3 sm:grid-cols-3">
-      <Button variant="field" className="h-14 rounded-full text-base font-black" onClick={() => setRole("farmer")}><Sprout />{t.farmer}</Button>
-      <Button variant="secondaryFarm" className="h-14 rounded-full text-base font-black" onClick={() => setRole("buyer")}><ShoppingCart />{t.buyer}</Button>
-      <Button variant="secondaryFarm" className="h-14 rounded-full text-base font-black" onClick={() => setRole("labourer")}><Briefcase />{t.labourer}</Button>
+      <Button variant="field" className="h-14 rounded-full text-base font-black" onClick={() => navigateTo("farmer")}><Sprout />{t.farmer}</Button>
+      <Button variant="secondaryFarm" className="h-14 rounded-full text-base font-black" onClick={() => navigateTo("buyer")}><ShoppingCart />{t.buyer}</Button>
+      <Button variant="secondaryFarm" className="h-14 rounded-full text-base font-black" onClick={() => navigateTo("labourer")}><Briefcase />{t.labourer}</Button>
     </div>
   );
 
@@ -167,8 +199,9 @@ const Index = () => {
     <main className="min-h-[100svh] overflow-hidden bg-background text-foreground">
       <header className="sticky top-0 z-[950] border-b border-glass-border bg-glass/92 px-4 py-3 shadow-control backdrop-blur-panel">
         <div className="mx-auto flex max-w-7xl items-center justify-between gap-3">
-          <button className="flex items-center gap-3 text-left" onClick={() => setRole("home")}><span className="flex size-11 items-center justify-center rounded-full bg-primary text-primary-foreground shadow-control"><Leaf /></span><span><strong className="block font-display text-lg">Krishi-Mysuru</strong><small className="font-bold text-muted-foreground">Smart Farm Companion</small></span></button>
+          <div className="flex items-center gap-2"><Button variant="glass" size="icon" className="rounded-full" onClick={goBack} disabled={!history.length} aria-label="Go back"><ArrowLeft /></Button><button className="flex items-center gap-3 text-left" onClick={() => navigateTo("home")}><span className="flex size-11 items-center justify-center rounded-full bg-primary text-primary-foreground shadow-control"><Leaf /></span><span><strong className="block font-display text-lg">Krishi-Mysuru</strong><small className="hidden font-bold text-muted-foreground sm:block">Smart Farm Companion</small></span></button></div>
           <nav className="flex items-center gap-2 rounded-full border border-glass-border bg-card/80 p-1">
+            <Button variant="ghost" size="icon" className="rounded-full" onClick={() => setTheme(theme === "dark" ? "light" : "dark")} aria-label="Toggle theme">{theme === "dark" ? <Sun /> : <Moon />}</Button>
             {(["en", "kn", "hi"] as Language[]).map((lng) => <Button key={lng} variant={language === lng ? "field" : "ghost"} size="sm" className="rounded-full" onClick={() => setLanguage(lng)}>{lng === "en" ? "EN" : lng === "kn" ? "ಕನ್ನಡ" : "हिंदी"}</Button>)}
           </nav>
         </div>
@@ -180,7 +213,7 @@ const Index = () => {
         <section className="mx-auto max-w-7xl px-4 py-5">
           <div className="mb-4 flex gap-2 overflow-x-auto pb-2">
             {(Object.keys(t.tabs) as FarmerTab[]).map((tab) => (
-              <Button key={tab} variant={farmerTab === tab ? "field" : "glass"} className="rounded-full" onClick={() => setFarmerTab(tab)}>
+              <Button key={tab} variant={farmerTab === tab ? "field" : "glass"} className="rounded-full" onClick={() => navigateTo("farmer", tab)}>
                 {tab === "field" && <Map />}
                 {tab === "export" && <Package />}
                 {t.tabs[tab]}
@@ -189,14 +222,14 @@ const Index = () => {
           </div>
 
           {farmerTab === "field" ? (
-            <div className="relative h-[calc(100svh-9.5rem)] min-h-[560px] overflow-hidden rounded-[2rem] border border-glass-border shadow-glass">
+            <div className="relative h-[calc(100svh-9.5rem)] min-h-[560px] overflow-hidden rounded-[2rem] border border-glass-border shadow-glass max-md:h-[calc(100svh-8rem)] max-md:min-h-0 max-md:rounded-none max-md:border-x-0">
               <KrishiMap selectedId={selectedId} language={language} onSelect={setSelectedId} />
-              <div className="absolute left-4 top-4 z-[850] rounded-[1.25rem] border border-glass-border bg-glass/92 p-4 shadow-control backdrop-blur-panel">
+              <div className="absolute left-4 top-4 z-[850] rounded-[1.25rem] border border-glass-border bg-glass/92 p-4 shadow-control backdrop-blur-panel max-md:right-4 max-md:p-3">
                 <p className="text-xs font-black uppercase text-muted-foreground">Live Field</p>
                 <p className="font-display text-xl font-black">{selectedContent.name}</p>
                 <p className="text-sm font-bold text-muted-foreground">{selectedContent.soil}</p>
               </div>
-              <FieldIntelligencePanel region={selectedRegion} regionId={selectedId} language={language} />
+              <FieldIntelligencePanel region={selectedRegion} regionId={selectedId} language={language} isExpanded={fieldPanelOpen} onToggle={() => setFieldPanelOpen((open) => !open)} />
             </div>
           ) : farmerTab === "schemes" ? (
             <div className="space-y-4">
@@ -239,11 +272,11 @@ const Index = () => {
                     <select value={exportProfit} onChange={(e) => setExportProfit(e.target.value)} className="h-10 rounded-full border border-input bg-background px-3 text-sm font-bold"><option value="all">{language === "kn" ? "ಎಲ್ಲಾ ಲಾಭ" : "All profit"}</option><option value="35">35%+</option><option value="45">45%+</option><option value="50">50%+</option></select>
                   </div>
                 </div>
-                <div className="flex gap-3 overflow-x-auto pb-2">
+                <div className="max-h-[calc(100svh-18rem)] space-y-3 overflow-y-auto pr-1">
                   {filteredExportCrops.map((crop) => {
                     const c = crop[language];
                     return (
-                      <article key={crop.id} className="w-[300px] shrink-0 rounded-[1.25rem] border border-glass-border bg-secondary/25 p-4 shadow-control">
+                      <article key={crop.id} className="rounded-[1.25rem] border border-glass-border bg-secondary/25 p-4 shadow-control">
                         <button className="w-full text-left" onClick={() => setSelectedCrop(crop)}>
                           <div className="mb-3 flex items-start justify-between gap-3"><span className="text-4xl">{c.icon}</span><b className="rounded-full bg-card px-3 py-1 text-success shadow-control">{c.profit}</b></div>
                           <div className="flex flex-wrap gap-2"><p className="inline-flex rounded-full bg-accent/35 px-3 py-1 text-xs font-black text-accent-foreground">{c.tag}</p><p className="inline-flex rounded-full bg-card px-3 py-1 text-xs font-black text-primary">{getSeasonBadge(crop.id)}</p></div>
@@ -268,7 +301,7 @@ const Index = () => {
 
       {role === "buyer" && <section className="mx-auto grid max-w-7xl gap-4 px-4 py-6 lg:grid-cols-3"><Card title={t.browse} icon="🛒"><p className="font-bold text-muted-foreground">Filter by location, quantity and price.</p></Card><Card title="Bulk purchase via FPO" icon="🏢"><p className="font-bold text-muted-foreground">Sugarcane · Tomato · Ginger lots ready.</p></Card><Card title={t.track} icon="📦"><p className="font-bold text-muted-foreground">Order #KM-204 reaches tomorrow.</p><Button variant="field" className="mt-4 w-full rounded-full">{t.contact}</Button></Card></section>}
 
-      {role === "labourer" && <section className="mx-auto grid max-w-7xl gap-4 px-4 py-6 lg:grid-cols-3"><Card title={t.nearby} icon="👷"><p className="font-black">Harvest work · Nanjangud</p><p className="text-sm font-bold text-muted-foreground">5 km away · Apply with 1 click</p></Card><Card title={t.wage} icon="💰"><p className="font-display text-3xl font-black text-primary">₹650/day</p><p className="font-bold text-muted-foreground">Current local average</p></Card><Card title="Work history + ratings" icon="⭐"><p className="font-display text-3xl font-black text-primary">4.8/5</p><Button variant="field" className="mt-4 w-full rounded-full">Apply now</Button></Card></section>}
+      {role === "labourer" && <section className="mx-auto max-w-7xl px-4 py-6"><h2 className="mb-6 flex items-center gap-2 font-display text-2xl font-black text-primary"><Users className="size-7" /> {labourLabels.find}</h2><div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">{labourJobs.map((job) => { const slotsRemaining = job.totalSlots - job.filledSlots; const isLow = slotsRemaining <= 3; const localized = language === "kn" ? "kn" : "en"; return <article key={job.id} className="rounded-[1.25rem] border border-glass-border bg-card p-5 shadow-control transition-shadow hover:shadow-glass"><div className="mb-4 flex items-start justify-between gap-3"><h3 className="font-display text-lg font-black leading-tight">{job.title[localized]}</h3><span className={`rounded-full px-3 py-1 text-xs font-black ${isLow ? "bg-warning/18 text-warning" : "bg-secondary/45 text-primary"}`}>{slotsRemaining} {labourLabels.slots}</span></div><div className="mb-6 space-y-2"><p className="flex items-center gap-2 text-sm font-bold text-muted-foreground"><MapPin className="size-4 text-primary" />{job.location[localized]}</p><p className="flex items-center gap-2 text-sm font-bold text-muted-foreground"><Calendar className="size-4 text-primary" />{job.date}</p><p className="flex items-center gap-2 font-black text-primary"><IndianRupee className="size-4" />{job.wage}<span className="text-xs font-bold text-muted-foreground">/ {labourLabels.wage}</span></p></div><div className="mb-6 h-2 overflow-hidden rounded-full bg-muted"><div className={`h-full transition-all duration-500 ${isLow ? "bg-warning" : "bg-primary"}`} style={{ width: `${(job.filledSlots / job.totalSlots) * 100}%` }} /></div><Button disabled={job.isApplied || slotsRemaining === 0} onClick={() => handleApplyJob(job.id)} variant={job.isApplied ? "secondaryFarm" : "field"} className="w-full rounded-xl font-black">{job.isApplied ? <><CheckCircle className="size-5" />{labourLabels.applied}</> : labourLabels.apply}</Button></article>; })}</div></section>}
 
       {(selectedScheme || applyingScheme || selectedCrop || sellingCrop) && (
         <div className="fixed inset-0 z-[1200] flex items-center justify-center bg-foreground/35 p-4 backdrop-blur-sm">
@@ -294,10 +327,6 @@ const Index = () => {
         </div>
       )}
 
-      <div className="fixed bottom-4 left-1/2 z-[900] flex -translate-x-1/2 items-center gap-2 rounded-full border border-glass-border bg-glass/92 p-2 shadow-glass backdrop-blur-panel">
-        <Button variant="ghost" size="icon" className="rounded-full" onClick={() => goRole(-1)}><ArrowLeft /></Button>
-        <Button variant="field" className="rounded-full" onClick={() => goRole(1)}>{role === "home" ? "Start" : role}<ArrowRight /></Button>
-      </div>
     </main>
   );
 };

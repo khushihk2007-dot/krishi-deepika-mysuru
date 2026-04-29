@@ -81,13 +81,14 @@ const cropIcons: Record<string, string> = {
 
 const getCropIcon = (crop: string) => cropIcons[crop.toLowerCase()] ?? "🌱";
 
-export function FieldIntelligencePanel({ region, regionId, language }: { region: Region; regionId: RegionId; language: Language }) {
+export function FieldIntelligencePanel({ region, regionId, language, isExpanded, onToggle }: { region: Region; regionId: RegionId; language: Language; isExpanded?: boolean; onToggle?: () => void }) {
   const labels = uiLabels[language];
   const localized = getRegionContent(region, regionId, language);
   const isAcidic = region.ph < 6;
 
   return (
-    <aside className="fixed bottom-0 left-0 right-0 z-[900] max-h-[70vh] overflow-y-auto rounded-t-lg border border-glass-border bg-glass/94 p-4 text-glass-foreground shadow-glass backdrop-blur-panel animate-sheet-in md:bottom-6 md:left-auto md:right-6 md:top-6 md:max-h-[calc(100vh-3rem)] md:w-[410px] md:rounded-lg md:p-5 md:animate-panel-in">
+    <aside className={`fixed bottom-0 left-0 right-0 z-[900] overflow-y-auto rounded-t-lg border border-glass-border bg-glass/94 p-4 text-glass-foreground shadow-glass backdrop-blur-panel animate-sheet-in md:bottom-6 md:left-auto md:right-6 md:top-6 md:max-h-[calc(100vh-3rem)] md:w-[410px] md:rounded-lg md:p-5 md:animate-panel-in ${isExpanded ? "max-h-[72vh]" : "max-h-[148px]"}`}>
+      <button className="mx-auto mb-3 block h-1.5 w-16 rounded-full bg-muted-foreground/45 md:hidden" aria-label="Toggle field information" type="button" onClick={onToggle} />
       <div className="mb-5 flex items-start justify-between gap-4">
         <div className="flex min-w-0 items-center gap-3">
           <div className="flex size-10 shrink-0 items-center justify-center rounded-md bg-primary/12 text-primary">
@@ -98,10 +99,12 @@ export function FieldIntelligencePanel({ region, regionId, language }: { region:
             <p className="text-sm font-semibold text-muted-foreground">Field Intelligence</p>
           </div>
         </div>
-        <button className="flex size-9 shrink-0 items-center justify-center rounded-md text-muted-foreground transition-colors hover:bg-muted hover:text-foreground" aria-label="Close panel" type="button">
+        <button className="flex size-9 shrink-0 items-center justify-center rounded-md text-muted-foreground transition-colors hover:bg-muted hover:text-foreground" aria-label="Close panel" type="button" onClick={onToggle}>
           <X className="size-5" />
         </button>
       </div>
+
+      <div className={isExpanded ? "block" : "hidden md:block"}>
 
       {isAcidic && (
         <div className="mb-5 flex gap-3 rounded-lg bg-warning p-4 text-warning-foreground shadow-control">
@@ -186,6 +189,7 @@ export function FieldIntelligencePanel({ region, regionId, language }: { region:
       </div>
 
       <Button variant="field" className="mt-5 w-full uppercase tracking-[0.04em]"><Phone className="size-4" />{labels.call}</Button>
+      </div>
     </aside>
   );
 }
