@@ -58,6 +58,15 @@ const exportCrops = [
   { district: "Vijayapura/Bagalkot", id: "vij_grapes", flags: "🇳🇱 🇧🇩 🇦🇪", en: { crop: "Seedless Grapes / Pomegranate", destination: "Netherlands, Bangladesh, UAE", demand: "High", profit: "+38%", reason: "Excellent shelf life and size; high sugar content (Brix level).", tag: "Export Quality", icon: "🍇" }, kn: { crop: "ಬೀಜವಿಲ್ಲದ ದ್ರಾಕ್ಷಿ / ದಾಳಿಂಬೆ", destination: "ನೆದರ್ಲ್ಯಾಂಡ್ಸ್, ಬಾಂಗ್ಲಾದೇಶ, ಯುಎಇ", demand: "ಹೆಚ್ಚು", profit: "+38%", reason: "ದೀರ್ಘ ಬಾಳಿಕೆ ಮತ್ತು ಸಿಹಿ ಅಂಶ (Brix level) ಹೆಚ್ಚಿರುವುದರಿಂದ ಬೇಡಿಕೆ.", tag: "ರಫ್ತು ಗುಣಮಟ್ಟ", icon: "🍇" }, hi: { crop: "बीजरहित अंगूर / अनार", destination: "नीदरलैंड, बांग्लादेश, UAE", demand: "अधिक", profit: "+38%", reason: "बेहतरीन shelf life, आकार और अधिक मिठास (Brix level) के कारण मांग।", tag: "निर्यात गुणवत्ता", icon: "🍇" } },
 ] satisfies ExportCrop[];
 const priceTrend = [{ v: 28 }, { v: 34 }, { v: 31 }, { v: 42 }, { v: 48 }, { v: 54 }, { v: 61 }];
+const initialLabourJobs: LabourJob[] = [
+  { id: 1, title: { en: "Banana Harvesting", kn: "ಬಾಳೆಹಣ್ಣು ಕೊಯ್ಲು" }, location: { en: "Nanjangud, Mysuru", kn: "ನಂಜನಗೂಡು, ಮೈಸೂರು" }, wage: "650", date: "2026-05-12", totalSlots: 10, filledSlots: 7, isApplied: false },
+  { id: 2, title: { en: "Coffee Bean Picking", kn: "ಕಾಫಿ ಬೀಜ ಆರಿಸುವುದು" }, location: { en: "Somwarpet, Kodagu", kn: "ಸೋಮವಾರಪೇಟೆ, ಕೊಡಗು" }, wage: "550", date: "2026-05-15", totalSlots: 20, filledSlots: 18, isApplied: false },
+];
+const labourCopy = {
+  en: { wage: "per day", apply: "Apply Now", applied: "Applied", slots: "Slots Left", find: "Find Nearby Work" },
+  kn: { wage: "ಪ್ರತಿದಿನ", apply: "ಈಗಲೇ ಅನ್ವಯಿಸಿ", applied: "ಅನ್ವಯಿಸಲಾಗಿದೆ", slots: "ಖಾಲಿ ಇರುವ ಸ್ಥಾನಗಳು", find: "ಹತ್ತಿರದ ಕೆಲಸ ಹುಡುಕಿ" },
+  hi: { wage: "per day", apply: "Apply Now", applied: "Applied", slots: "Slots Left", find: "Find Nearby Work" },
+} as const;
 
 const governmentSchemes = [
   { id: "pm_kisan", en: { title: "PM-KISAN", benefit: "₹6,000 yearly", eligibility: "Landholding farmers", description: "Direct income support in 3 equal installments.", tag: "Central Sector", icon: "💰" }, kn: { title: "ಪಿಎಂ-ಕಿಸಾನ್", benefit: "ವರ್ಷಕ್ಕೆ ₹6,000", eligibility: "ಭೂಮಿ ಹೊಂದಿರುವ ರೈತರು", description: "3 ಸಮಾನ ಕಂತುಗಳಲ್ಲಿ ನೇರ ಆದಾಯ ಬೆಂಬಲ.", tag: "ಕೇಂದ್ರ ವಲಯ", icon: "💰" }, hi: { title: "पीएम-किसान", benefit: "₹6,000 प्रति वर्ष", eligibility: "भूमि रखने वाले किसान", description: "3 समान किस्तों में सीधा आय समर्थन।", tag: "केंद्रीय क्षेत्र", icon: "💰" } },
