@@ -327,7 +327,6 @@ const Index = () => {
         </div>
       )}
 
-      {role !== "home" && <div className="fixed bottom-4 left-1/2 z-[900] flex -translate-x-1/2 items-center gap-2 rounded-full border border-glass-border bg-glass/92 p-2 shadow-glass backdrop-blur-panel md:hidden"><Button variant="field" className="rounded-full" onClick={() => role === "farmer" ? navigateTo("farmer", "labour") : navigateTo("farmer")}>{role === "labourer" ? t.farmer : t.apply}</Button></div>}
     </main>
   );
 };
