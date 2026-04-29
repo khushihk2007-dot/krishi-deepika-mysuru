@@ -116,12 +116,33 @@ const Index = () => {
   const [role, setRole] = useState<Role>("home");
   const [farmerTab, setFarmerTab] = useState<FarmerTab>("overview");
   const [selectedId, setSelectedId] = useState<RegionId>("gokulam");
+  const [history, setHistory] = useState<ViewState[]>([]);
+  const [theme, setTheme] = useState<"light" | "dark">(() => localStorage.getItem("krishi-theme") === "dark" ? "dark" : "light");
+  const [fieldPanelOpen, setFieldPanelOpen] = useState(false);
+  const [labourJobs, setLabourJobs] = useState<LabourJob[]>(initialLabourJobs);
   const selectedRegion = regions[selectedId];
-  const roles: Role[] = ["home", "farmer", "labourer", "buyer"];
-  const roleIndex = roles.indexOf(role);
-  const goRole = (direction: -1 | 1) => setRole(roles[(roleIndex + direction + roles.length) % roles.length]);
   const selectedContent = getRegionContent(selectedRegion, selectedId, language);
   const t = copy[language];
+  const labourLabels = labourCopy[language];
+
+  useEffect(() => {
+    document.documentElement.classList.toggle("dark", theme === "dark");
+    localStorage.setItem("krishi-theme", theme);
+  }, [theme]);
+
+  const navigateTo = (nextRole: Role, nextTab = farmerTab) => {
+    setHistory((items) => [...items, { role, farmerTab }].slice(-12));
+    setRole(nextRole);
+    if (nextRole === "farmer") setFarmerTab(nextTab);
+  };
+  const goBack = () => {
+    const previous = history[history.length - 1];
+    if (!previous) return;
+    setHistory((items) => items.slice(0, -1));
+    setRole(previous.role);
+    setFarmerTab(previous.farmerTab);
+  };
+  const handleApplyJob = (id: number) => setLabourJobs((jobs) => jobs.map((job) => job.id === id ? { ...job, isApplied: true, filledSlots: Math.min(job.totalSlots, job.filledSlots + 1) } : job));
 
   const setLanguage = (lng: Language) => {
     setLanguageState(lng);
