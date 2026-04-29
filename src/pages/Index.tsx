@@ -1,5 +1,5 @@
-import { useMemo, useState } from "react";
-import { ArrowLeft, ArrowRight, Briefcase, CloudSun, Globe2, Leaf, Map, Mic, Package, Phone, Search, ShoppingCart, Sprout, Users, X } from "lucide-react";
+import { useEffect, useMemo, useState } from "react";
+import { ArrowLeft, Briefcase, Calendar, CheckCircle, CloudSun, Globe2, IndianRupee, Leaf, Map, MapPin, Mic, Moon, Package, Phone, Search, ShoppingCart, Sprout, Sun, Users, X } from "lucide-react";
 import { Area, AreaChart, ResponsiveContainer } from "recharts";
 import { Button } from "@/components/ui/button";
 import { FieldIntelligencePanel } from "@/components/FieldIntelligencePanel";
@@ -8,10 +8,12 @@ import { getRegionContent, Language, RegionId, regions } from "@/data/krishiMysu
 
 type Role = "home" | "farmer" | "buyer" | "labourer";
 type FarmerTab = "overview" | "field" | "export" | "market" | "sell" | "fpo" | "labour" | "schemes";
+type ViewState = { role: Role; farmerTab: FarmerTab };
 type SchemeContent = { title: string; benefit: string; eligibility: string; description: string; tag: string; icon: string };
 type Scheme = Record<Language, SchemeContent> & { id: string };
 type ExportCropContent = { crop: string; destination: string; demand: string; profit: string; reason: string; tag: string; icon: string };
 type ExportCrop = { district: string; id: string; flags: string } & Record<Language, ExportCropContent>;
+type LabourJob = { id: number; title: Record<"en" | "kn", string>; location: Record<"en" | "kn", string>; wage: string; date: string; totalSlots: number; filledSlots: number; isApplied: boolean };
 
 const copy = {
   en: {
