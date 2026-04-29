@@ -197,12 +197,12 @@ const Index = () => {
 
   return (
     <main className="min-h-[100svh] overflow-hidden bg-background text-foreground">
-      <header className="sticky top-0 z-[950] border-b border-glass-border bg-glass/92 px-4 py-3 shadow-control backdrop-blur-panel">
-        <div className="mx-auto flex max-w-7xl items-center justify-between gap-3">
-          <div className="flex items-center gap-2"><Button variant="glass" size="icon" className="rounded-full" onClick={goBack} disabled={!history.length} aria-label="Go back"><ArrowLeft /></Button><button className="flex items-center gap-3 text-left" onClick={() => navigateTo("home")}><span className="flex size-11 items-center justify-center rounded-full bg-primary text-primary-foreground shadow-control"><Leaf /></span><span><strong className="block font-display text-lg">Krishi-Mysuru</strong><small className="hidden font-bold text-muted-foreground sm:block">Smart Farm Companion</small></span></button></div>
-          <nav className="flex items-center gap-2 rounded-full border border-glass-border bg-card/80 p-1">
-            <Button variant="ghost" size="icon" className="rounded-full" onClick={() => setTheme(theme === "dark" ? "light" : "dark")} aria-label="Toggle theme">{theme === "dark" ? <Sun /> : <Moon />}</Button>
-            {(["en", "kn", "hi"] as Language[]).map((lng) => <Button key={lng} variant={language === lng ? "field" : "ghost"} size="sm" className="rounded-full" onClick={() => setLanguage(lng)}>{lng === "en" ? "EN" : lng === "kn" ? "ಕನ್ನಡ" : "हिंदी"}</Button>)}
+      <header className="sticky top-0 z-[950] border-b border-glass-border bg-glass/92 px-3 py-2 shadow-control backdrop-blur-panel sm:px-4 sm:py-3">
+        <div className="mx-auto flex max-w-7xl items-center justify-between gap-2 sm:gap-3">
+          <div className="flex min-w-0 flex-1 items-center gap-1.5 sm:gap-2"><Button variant="glass" size="icon" className="size-10 shrink-0 rounded-full sm:size-11" onClick={goBack} disabled={!history.length} aria-label="Go back"><ArrowLeft className="size-5" /></Button><button className="flex min-w-0 items-center gap-2 text-left sm:gap-3" onClick={() => navigateTo("home")}><span className="flex size-10 shrink-0 items-center justify-center rounded-full bg-primary text-primary-foreground shadow-control sm:size-11"><Leaf className="size-5 sm:size-6" /></span><span className="min-w-0"><strong className="block truncate font-display text-base leading-tight sm:text-lg">Krishi-Mysuru</strong><small className="hidden font-bold text-muted-foreground sm:block">Smart Farm Companion</small></span></button></div>
+          <nav className="flex shrink-0 items-center gap-1 rounded-full border border-glass-border bg-card/80 p-1 sm:gap-2">
+            <Button variant="ghost" size="icon" className="size-9 rounded-full sm:size-10" onClick={() => setTheme(theme === "dark" ? "light" : "dark")} aria-label="Toggle theme">{theme === "dark" ? <Sun className="size-4" /> : <Moon className="size-4" />}</Button>
+            {(["en", "kn", "hi"] as Language[]).map((lng) => <Button key={lng} variant={language === lng ? "field" : "ghost"} size="sm" className="h-9 rounded-full px-3 text-sm font-black sm:h-10 sm:px-4" onClick={() => setLanguage(lng)}>{lng === "en" ? "EN" : lng === "kn" ? <><span className="sm:hidden">ಕ</span><span className="hidden sm:inline">ಕನ್ನಡ</span></> : <><span className="sm:hidden">हि</span><span className="hidden sm:inline">हिंदी</span></>}</Button>)}
           </nav>
         </div>
       </header>
