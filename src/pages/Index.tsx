@@ -1,12 +1,12 @@
 import { useEffect, useMemo, useState } from "react";
-import { ArrowLeft, Briefcase, Calendar, CheckCircle, CloudSun, Globe2, IndianRupee, Leaf, Map, MapPin, Mic, Moon, Package, Phone, Search, ShoppingCart, Sprout, Sun, Users, X } from "lucide-react";
+import { ArrowLeft, Briefcase, Calendar, CheckCircle, CloudSun, Globe2, IndianRupee, Leaf, LockKeyhole, Map, MapPin, Mic, Moon, Package, Phone, Search, ShieldCheck, ShoppingCart, Sprout, Sun, UserRound, Users, X } from "lucide-react";
 import { Area, AreaChart, ResponsiveContainer } from "recharts";
 import { Button } from "@/components/ui/button";
 import { FieldIntelligencePanel } from "@/components/FieldIntelligencePanel";
 import { KrishiMap } from "@/components/KrishiMap";
 import { getRegionContent, Language, RegionId, regions } from "@/data/krishiMysuru";
 
-type Role = "home" | "farmer" | "buyer" | "labourer";
+type Role = "home" | "farmer" | "buyer" | "labourer" | "farmerAuth" | "farmerProfile";
 type FarmerTab = "overview" | "field" | "export" | "market" | "sell" | "fpo" | "labour" | "schemes";
 type ViewState = { role: Role; farmerTab: FarmerTab };
 type SchemeContent = { title: string; benefit: string; eligibility: string; description: string; tag: string; icon: string };
@@ -66,6 +66,12 @@ const labourCopy = {
   en: { wage: "per day", apply: "Apply Now", applied: "Applied", slots: "Slots Left", find: "Find Nearby Work" },
   kn: { wage: "ಪ್ರತಿದಿನ", apply: "ಈಗಲೇ ಅನ್ವಯಿಸಿ", applied: "ಅನ್ವಯಿಸಲಾಗಿದೆ", slots: "ಖಾಲಿ ಇರುವ ಸ್ಥಾನಗಳು", find: "ಹತ್ತಿರದ ಕೆಲಸ ಹುಡುಕಿ" },
   hi: { wage: "per day", apply: "Apply Now", applied: "Applied", slots: "Slots Left", find: "Find Nearby Work" },
+} as const;
+
+const loginLabels = {
+  en: { title: "Farmer Login", welcome: "Welcome back, Farmer", subtitle: "Access your smart farm intelligence", phonePlaceholder: "Enter 10-digit mobile number", aadhaarLogin: "Login with Aadhaar Number", btnRequest: "Send OTP", btnVerify: "Verify & Enter", resend: "Resend OTP", newMember: "New Farmer? Create Account", registerTitle: "Create Farmer Account", fullName: "Full Name", district: "District", crop: "Primary Crop", fid: "Link your FID (Farmer ID)", register: "Register & Verify", secureNote: "Your data is secured by 256-bit encryption", profile: "Farmer Profile", dashboard: "Enter Farmer Dashboard", logout: "Logout" },
+  kn: { title: "ರೈತರ ಲಾಗಿನ್", welcome: "ಮತ್ತೆ ಸ್ವಾಗತ, ರೈತರೆ", subtitle: "ನಿಮ್ಮ ಸ್ಮಾರ್ಟ್ ಫಾರ್ಮ್ ಮಾಹಿತಿಯನ್ನು ಪ್ರವೇಶಿಸಿ", phonePlaceholder: "10-ಅಂಕಿಯ ಮೊಬೈಲ್ ಸಂಖ್ಯೆಯನ್ನು ನಮೂದಿಸಿ", aadhaarLogin: "ಆಧಾರ್ ಸಂಖ್ಯೆಯಿಂದ ಲಾಗಿನ್", btnRequest: "OTP ಕಳುಹಿಸಿ", btnVerify: "ಪರಿಶೀಲಿಸಿ ಮತ್ತು ಪ್ರವೇಶಿಸಿ", resend: "OTP ಮತ್ತೆ ಕಳುಹಿಸಿ", newMember: "ಹೊಸ ರೈತರೇ? ಖಾತೆಯನ್ನು ರಚಿಸಿ", registerTitle: "ರೈತರ ಖಾತೆ ರಚಿಸಿ", fullName: "ಪೂರ್ಣ ಹೆಸರು", district: "ಜಿಲ್ಲೆ", crop: "ಮುಖ್ಯ ಬೆಳೆ", fid: "ನಿಮ್ಮ FID (ರೈತ ಐಡಿ) ಲಿಂಕ್ ಮಾಡಿ", register: "ನೋಂದಣಿ ಮಾಡಿ", secureNote: "ನಿಮ್ಮ ಡೇಟಾ ಸುರಕ್ಷಿತವಾಗಿದೆ", profile: "ರೈತರ ಪ್ರೊಫೈಲ್", dashboard: "ರೈತ ಡ್ಯಾಶ್‌ಬೋರ್ಡ್‌ಗೆ ಹೋಗಿ", logout: "ಲಾಗೌಟ್" },
+  hi: { title: "किसान लॉगिन", welcome: "वापसी पर स्वागत है, किसान", subtitle: "अपनी स्मार्ट फार्म जानकारी देखें", phonePlaceholder: "10 अंकों का मोबाइल नंबर डालें", aadhaarLogin: "आधार नंबर से लॉगिन", btnRequest: "OTP भेजें", btnVerify: "सत्यापित करें", resend: "OTP फिर भेजें", newMember: "नए किसान? खाता बनाएँ", registerTitle: "किसान खाता बनाएँ", fullName: "पूरा नाम", district: "जिला", crop: "मुख्य फसल", fid: "अपना FID (Farmer ID) लिंक करें", register: "रजिस्टर करें", secureNote: "आपका डेटा सुरक्षित है", profile: "किसान प्रोफाइल", dashboard: "किसान डैशबोर्ड खोलें", logout: "लॉगआउट" },
 } as const;
 
 const governmentSchemes = [
