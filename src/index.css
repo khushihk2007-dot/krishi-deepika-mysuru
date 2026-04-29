@@ -69,6 +69,39 @@ All colors MUST be HSL.
     --sidebar-ring: 217.2 91.2% 59.8%;
   }
 
+  .dark {
+    --background: 150 28% 9%;
+    --foreground: 88 45% 94%;
+    --card: 148 24% 13%;
+    --card-foreground: 88 45% 94%;
+    --popover: 148 24% 13%;
+    --popover-foreground: 88 45% 94%;
+    --primary: 123 42% 46%;
+    --primary-foreground: 88 64% 96%;
+    --secondary: 118 24% 25%;
+    --secondary-foreground: 88 45% 94%;
+    --muted: 145 18% 18%;
+    --muted-foreground: 92 18% 73%;
+    --accent: 48 88% 56%;
+    --accent-foreground: 148 24% 10%;
+    --destructive: 4 72% 52%;
+    --destructive-foreground: 0 0% 100%;
+    --border: 132 18% 28%;
+    --input: 132 18% 28%;
+    --ring: 123 42% 46%;
+    --glass: 148 24% 13%;
+    --glass-foreground: 88 45% 94%;
+    --glass-border: 123 42% 52% / 0.22;
+    --warning: 28 90% 56%;
+    --warning-foreground: 148 24% 10%;
+    --success: 133 48% 50%;
+    --success-foreground: 148 24% 10%;
+    --map-filter: saturate(0.86) contrast(1.08) brightness(0.72) hue-rotate(8deg);
+    --shadow-glass: 0 24px 70px -36px hsl(0 0% 0% / 0.72);
+    --shadow-control: 0 14px 34px -24px hsl(0 0% 0% / 0.62);
+    --shadow-marker: 0 10px 22px -8px hsl(0 0% 0% / 0.72);
+  }
+
 }
 
 @layer base {
