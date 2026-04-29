@@ -213,7 +213,7 @@ const Index = () => {
         <section className="mx-auto max-w-7xl px-4 py-5">
           <div className="mb-4 flex gap-2 overflow-x-auto pb-2">
             {(Object.keys(t.tabs) as FarmerTab[]).map((tab) => (
-              <Button key={tab} variant={farmerTab === tab ? "field" : "glass"} className="rounded-full" onClick={() => setFarmerTab(tab)}>
+              <Button key={tab} variant={farmerTab === tab ? "field" : "glass"} className="rounded-full" onClick={() => navigateTo("farmer", tab)}>
                 {tab === "field" && <Map />}
                 {tab === "export" && <Package />}
                 {t.tabs[tab]}
@@ -222,14 +222,14 @@ const Index = () => {
           </div>
 
           {farmerTab === "field" ? (
-            <div className="relative h-[calc(100svh-9.5rem)] min-h-[560px] overflow-hidden rounded-[2rem] border border-glass-border shadow-glass">
+            <div className="relative h-[calc(100svh-9.5rem)] min-h-[560px] overflow-hidden rounded-[2rem] border border-glass-border shadow-glass max-md:h-[calc(100svh-8rem)] max-md:min-h-0 max-md:rounded-none max-md:border-x-0">
               <KrishiMap selectedId={selectedId} language={language} onSelect={setSelectedId} />
-              <div className="absolute left-4 top-4 z-[850] rounded-[1.25rem] border border-glass-border bg-glass/92 p-4 shadow-control backdrop-blur-panel">
+              <div className="absolute left-4 top-4 z-[850] rounded-[1.25rem] border border-glass-border bg-glass/92 p-4 shadow-control backdrop-blur-panel max-md:right-4 max-md:p-3">
                 <p className="text-xs font-black uppercase text-muted-foreground">Live Field</p>
                 <p className="font-display text-xl font-black">{selectedContent.name}</p>
                 <p className="text-sm font-bold text-muted-foreground">{selectedContent.soil}</p>
               </div>
-              <FieldIntelligencePanel region={selectedRegion} regionId={selectedId} language={language} />
+              <FieldIntelligencePanel region={selectedRegion} regionId={selectedId} language={language} isExpanded={fieldPanelOpen} onToggle={() => setFieldPanelOpen((open) => !open)} />
             </div>
           ) : farmerTab === "schemes" ? (
             <div className="space-y-4">
@@ -272,11 +272,11 @@ const Index = () => {
                     <select value={exportProfit} onChange={(e) => setExportProfit(e.target.value)} className="h-10 rounded-full border border-input bg-background px-3 text-sm font-bold"><option value="all">{language === "kn" ? "ಎಲ್ಲಾ ಲಾಭ" : "All profit"}</option><option value="35">35%+</option><option value="45">45%+</option><option value="50">50%+</option></select>
                   </div>
                 </div>
-                <div className="flex gap-3 overflow-x-auto pb-2">
+                <div className="max-h-[calc(100svh-18rem)] space-y-3 overflow-y-auto pr-1">
                   {filteredExportCrops.map((crop) => {
                     const c = crop[language];
                     return (
-                      <article key={crop.id} className="w-[300px] shrink-0 rounded-[1.25rem] border border-glass-border bg-secondary/25 p-4 shadow-control">
+                      <article key={crop.id} className="rounded-[1.25rem] border border-glass-border bg-secondary/25 p-4 shadow-control">
                         <button className="w-full text-left" onClick={() => setSelectedCrop(crop)}>
                           <div className="mb-3 flex items-start justify-between gap-3"><span className="text-4xl">{c.icon}</span><b className="rounded-full bg-card px-3 py-1 text-success shadow-control">{c.profit}</b></div>
                           <div className="flex flex-wrap gap-2"><p className="inline-flex rounded-full bg-accent/35 px-3 py-1 text-xs font-black text-accent-foreground">{c.tag}</p><p className="inline-flex rounded-full bg-card px-3 py-1 text-xs font-black text-primary">{getSeasonBadge(crop.id)}</p></div>
