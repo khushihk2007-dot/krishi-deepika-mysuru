@@ -189,9 +189,9 @@ const Index = () => {
 
   const roleButtons = (
     <div className="grid gap-3 sm:grid-cols-3">
-      <Button variant="field" className="h-14 rounded-full text-base font-black" onClick={() => setRole("farmer")}><Sprout />{t.farmer}</Button>
-      <Button variant="secondaryFarm" className="h-14 rounded-full text-base font-black" onClick={() => setRole("buyer")}><ShoppingCart />{t.buyer}</Button>
-      <Button variant="secondaryFarm" className="h-14 rounded-full text-base font-black" onClick={() => setRole("labourer")}><Briefcase />{t.labourer}</Button>
+      <Button variant="field" className="h-14 rounded-full text-base font-black" onClick={() => navigateTo("farmer")}><Sprout />{t.farmer}</Button>
+      <Button variant="secondaryFarm" className="h-14 rounded-full text-base font-black" onClick={() => navigateTo("buyer")}><ShoppingCart />{t.buyer}</Button>
+      <Button variant="secondaryFarm" className="h-14 rounded-full text-base font-black" onClick={() => navigateTo("labourer")}><Briefcase />{t.labourer}</Button>
     </div>
   );
 
@@ -199,8 +199,9 @@ const Index = () => {
     <main className="min-h-[100svh] overflow-hidden bg-background text-foreground">
       <header className="sticky top-0 z-[950] border-b border-glass-border bg-glass/92 px-4 py-3 shadow-control backdrop-blur-panel">
         <div className="mx-auto flex max-w-7xl items-center justify-between gap-3">
-          <button className="flex items-center gap-3 text-left" onClick={() => setRole("home")}><span className="flex size-11 items-center justify-center rounded-full bg-primary text-primary-foreground shadow-control"><Leaf /></span><span><strong className="block font-display text-lg">Krishi-Mysuru</strong><small className="font-bold text-muted-foreground">Smart Farm Companion</small></span></button>
+          <div className="flex items-center gap-2"><Button variant="glass" size="icon" className="rounded-full" onClick={goBack} disabled={!history.length} aria-label="Go back"><ArrowLeft /></Button><button className="flex items-center gap-3 text-left" onClick={() => navigateTo("home")}><span className="flex size-11 items-center justify-center rounded-full bg-primary text-primary-foreground shadow-control"><Leaf /></span><span><strong className="block font-display text-lg">Krishi-Mysuru</strong><small className="hidden font-bold text-muted-foreground sm:block">Smart Farm Companion</small></span></button></div>
           <nav className="flex items-center gap-2 rounded-full border border-glass-border bg-card/80 p-1">
+            <Button variant="ghost" size="icon" className="rounded-full" onClick={() => setTheme(theme === "dark" ? "light" : "dark")} aria-label="Toggle theme">{theme === "dark" ? <Sun /> : <Moon />}</Button>
             {(["en", "kn", "hi"] as Language[]).map((lng) => <Button key={lng} variant={language === lng ? "field" : "ghost"} size="sm" className="rounded-full" onClick={() => setLanguage(lng)}>{lng === "en" ? "EN" : lng === "kn" ? "ಕನ್ನಡ" : "हिंदी"}</Button>)}
           </nav>
         </div>
