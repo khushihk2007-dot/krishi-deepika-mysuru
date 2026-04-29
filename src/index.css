@@ -156,8 +156,25 @@ All colors MUST be HSL.
     animation: pin-pulse 1.8s ease-out infinite;
   }
 
+  .growing-plant {
+    transform-origin: bottom center;
+    animation: growing-plant 1.15s ease-in-out infinite alternate;
+  }
+
+  @keyframes growing-plant {
+    from {
+      transform: scale(0.72) translateY(10px);
+      filter: saturate(0.9);
+    }
+    to {
+      transform: scale(1.08) translateY(-6px);
+      filter: saturate(1.2);
+    }
+  }
+
   @media (prefers-reduced-motion: reduce) {
-    .krishi-pin::after {
+    .krishi-pin::after,
+    .growing-plant {
       animation: none;
     }
   }

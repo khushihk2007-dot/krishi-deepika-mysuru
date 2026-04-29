@@ -1,12 +1,12 @@
 import { useEffect, useMemo, useState } from "react";
-import { ArrowLeft, Briefcase, Calendar, CheckCircle, CloudSun, Globe2, IndianRupee, Leaf, Map, MapPin, Mic, Moon, Package, Phone, Search, ShoppingCart, Sprout, Sun, Users, X } from "lucide-react";
+import { ArrowLeft, Briefcase, Calendar, CheckCircle, CloudSun, Globe2, IndianRupee, Leaf, LockKeyhole, Map, MapPin, Mic, Moon, Package, Phone, Search, ShieldCheck, ShoppingCart, Sprout, Sun, UserRound, Users, X } from "lucide-react";
 import { Area, AreaChart, ResponsiveContainer } from "recharts";
 import { Button } from "@/components/ui/button";
 import { FieldIntelligencePanel } from "@/components/FieldIntelligencePanel";
 import { KrishiMap } from "@/components/KrishiMap";
 import { getRegionContent, Language, RegionId, regions } from "@/data/krishiMysuru";
 
-type Role = "home" | "farmer" | "buyer" | "labourer";
+type Role = "home" | "farmer" | "buyer" | "labourer" | "farmerAuth" | "farmerProfile";
 type FarmerTab = "overview" | "field" | "export" | "market" | "sell" | "fpo" | "labour" | "schemes";
 type ViewState = { role: Role; farmerTab: FarmerTab };
 type SchemeContent = { title: string; benefit: string; eligibility: string; description: string; tag: string; icon: string };
@@ -68,6 +68,12 @@ const labourCopy = {
   hi: { wage: "per day", apply: "Apply Now", applied: "Applied", slots: "Slots Left", find: "Find Nearby Work" },
 } as const;
 
+const loginLabels = {
+  en: { title: "Farmer Login", welcome: "Welcome back, Farmer", subtitle: "Access your smart farm intelligence", phonePlaceholder: "Enter 10-digit mobile number", aadhaarLogin: "Login with Aadhaar Number", btnRequest: "Send OTP", btnVerify: "Verify & Enter", resend: "Resend OTP", newMember: "New Farmer? Create Account", registerTitle: "Create Farmer Account", fullName: "Full Name", district: "District", crop: "Primary Crop", fid: "Link your FID (Farmer ID)", register: "Register & Verify", secureNote: "Your data is secured by 256-bit encryption", profile: "Farmer Profile", dashboard: "Enter Farmer Dashboard", logout: "Logout" },
+  kn: { title: "ರೈತರ ಲಾಗಿನ್", welcome: "ಮತ್ತೆ ಸ್ವಾಗತ, ರೈತರೆ", subtitle: "ನಿಮ್ಮ ಸ್ಮಾರ್ಟ್ ಫಾರ್ಮ್ ಮಾಹಿತಿಯನ್ನು ಪ್ರವೇಶಿಸಿ", phonePlaceholder: "10-ಅಂಕಿಯ ಮೊಬೈಲ್ ಸಂಖ್ಯೆಯನ್ನು ನಮೂದಿಸಿ", aadhaarLogin: "ಆಧಾರ್ ಸಂಖ್ಯೆಯಿಂದ ಲಾಗಿನ್", btnRequest: "OTP ಕಳುಹಿಸಿ", btnVerify: "ಪರಿಶೀಲಿಸಿ ಮತ್ತು ಪ್ರವೇಶಿಸಿ", resend: "OTP ಮತ್ತೆ ಕಳುಹಿಸಿ", newMember: "ಹೊಸ ರೈತರೇ? ಖಾತೆಯನ್ನು ರಚಿಸಿ", registerTitle: "ರೈತರ ಖಾತೆ ರಚಿಸಿ", fullName: "ಪೂರ್ಣ ಹೆಸರು", district: "ಜಿಲ್ಲೆ", crop: "ಮುಖ್ಯ ಬೆಳೆ", fid: "ನಿಮ್ಮ FID (ರೈತ ಐಡಿ) ಲಿಂಕ್ ಮಾಡಿ", register: "ನೋಂದಣಿ ಮಾಡಿ", secureNote: "ನಿಮ್ಮ ಡೇಟಾ ಸುರಕ್ಷಿತವಾಗಿದೆ", profile: "ರೈತರ ಪ್ರೊಫೈಲ್", dashboard: "ರೈತ ಡ್ಯಾಶ್‌ಬೋರ್ಡ್‌ಗೆ ಹೋಗಿ", logout: "ಲಾಗೌಟ್" },
+  hi: { title: "किसान लॉगिन", welcome: "वापसी पर स्वागत है, किसान", subtitle: "अपनी स्मार्ट फार्म जानकारी देखें", phonePlaceholder: "10 अंकों का मोबाइल नंबर डालें", aadhaarLogin: "आधार नंबर से लॉगिन", btnRequest: "OTP भेजें", btnVerify: "सत्यापित करें", resend: "OTP फिर भेजें", newMember: "नए किसान? खाता बनाएँ", registerTitle: "किसान खाता बनाएँ", fullName: "पूरा नाम", district: "जिला", crop: "मुख्य फसल", fid: "अपना FID (Farmer ID) लिंक करें", register: "रजिस्टर करें", secureNote: "आपका डेटा सुरक्षित है", profile: "किसान प्रोफाइल", dashboard: "किसान डैशबोर्ड खोलें", logout: "लॉगआउट" },
+} as const;
+
 const governmentSchemes = [
   { id: "pm_kisan", en: { title: "PM-KISAN", benefit: "₹6,000 yearly", eligibility: "Landholding farmers", description: "Direct income support in 3 equal installments.", tag: "Central Sector", icon: "💰" }, kn: { title: "ಪಿಎಂ-ಕಿಸಾನ್", benefit: "ವರ್ಷಕ್ಕೆ ₹6,000", eligibility: "ಭೂಮಿ ಹೊಂದಿರುವ ರೈತರು", description: "3 ಸಮಾನ ಕಂತುಗಳಲ್ಲಿ ನೇರ ಆದಾಯ ಬೆಂಬಲ.", tag: "ಕೇಂದ್ರ ವಲಯ", icon: "💰" }, hi: { title: "पीएम-किसान", benefit: "₹6,000 प्रति वर्ष", eligibility: "भूमि रखने वाले किसान", description: "3 समान किस्तों में सीधा आय समर्थन।", tag: "केंद्रीय क्षेत्र", icon: "💰" } },
   { id: "pm_kmy", en: { title: "PM Kisan Maandhan (PM-KMY)", benefit: "₹3,000 monthly pension", eligibility: "Small farmers (Age 18-40)", description: "Old age pension security after attaining 60 years.", tag: "Pension", icon: "👴" }, kn: { title: "ಪಿಎಂ ಕಿಸಾನ್ ಮಾಂಧನ್", benefit: "₹3,000 ಮಾಸಿಕ ಪಿಂಚಣಿ", eligibility: "ಸಣ್ಣ ರೈತರು (ವಯಸ್ಸು 18-40)", description: "60 ವರ್ಷ ತುಂಬಿದ ನಂತರ ವೃದ್ಧಾಪ್ಯ ಪಿಂಚಣಿ ಭದ್ರತೆ.", tag: "ಪಿಂಚಣಿ", icon: "👴" }, hi: { title: "पीएम किसान मानधन", benefit: "₹3,000 मासिक पेंशन", eligibility: "छोटे किसान (उम्र 18-40)", description: "60 वर्ष के बाद वृद्धावस्था पेंशन सुरक्षा।", tag: "पेंशन", icon: "👴" } },
@@ -120,15 +126,33 @@ const Index = () => {
   const [theme, setTheme] = useState<"light" | "dark">(() => localStorage.getItem("krishi-theme") === "dark" ? "dark" : "light");
   const [fieldPanelOpen, setFieldPanelOpen] = useState(false);
   const [labourJobs, setLabourJobs] = useState<LabourJob[]>(initialLabourJobs);
+  const [authStep, setAuthStep] = useState<"phone" | "otp" | "success" | "register">("phone");
+  const [phoneNumber, setPhoneNumber] = useState("");
+  const [otp, setOtp] = useState(Array(6).fill(""));
+  const [resendTimer, setResendTimer] = useState(60);
+  const [farmerProfile, setFarmerProfile] = useState({ name: "", district: "Mysuru", crop: "Tomato", fid: "" });
   const selectedRegion = regions[selectedId];
   const selectedContent = getRegionContent(selectedRegion, selectedId, language);
   const t = copy[language];
   const labourLabels = labourCopy[language];
+  const login = loginLabels[language];
 
   useEffect(() => {
     document.documentElement.classList.toggle("dark", theme === "dark");
     localStorage.setItem("krishi-theme", theme);
   }, [theme]);
+
+  useEffect(() => {
+    if (authStep !== "otp" || resendTimer <= 0) return;
+    const timer = window.setTimeout(() => setResendTimer((value) => value - 1), 1000);
+    return () => window.clearTimeout(timer);
+  }, [authStep, resendTimer]);
+
+  useEffect(() => {
+    if (authStep !== "success") return;
+    const timer = window.setTimeout(() => navigateTo("farmerProfile"), 1300);
+    return () => window.clearTimeout(timer);
+  }, [authStep]);
 
   const navigateTo = (nextRole: Role, nextTab = farmerTab) => {
     setHistory((items) => [...items, { role, farmerTab }].slice(-12));
@@ -143,6 +167,16 @@ const Index = () => {
     setFarmerTab(previous.farmerTab);
   };
   const handleApplyJob = (id: number) => setLabourJobs((jobs) => jobs.map((job) => job.id === id ? { ...job, isApplied: true, filledSlots: Math.min(job.totalSlots, job.filledSlots + 1) } : job));
+  const requestOtp = () => {
+    setAuthStep("otp");
+    setResendTimer(60);
+  };
+  const verifyOtp = () => setAuthStep("success");
+  const updateOtp = (index: number, value: string) => setOtp((digits) => digits.map((digit, current) => current === index ? value.replace(/\D/g, "").slice(-1) : digit));
+  const startFarmerLogin = () => {
+    setAuthStep("phone");
+    navigateTo("farmerAuth");
+  };
 
   const setLanguage = (lng: Language) => {
     setLanguageState(lng);
@@ -189,7 +223,7 @@ const Index = () => {
 
   const roleButtons = (
     <div className="grid gap-3 sm:grid-cols-3">
-      <Button variant="field" className="h-14 rounded-full text-base font-black" onClick={() => navigateTo("farmer")}><Sprout />{t.farmer}</Button>
+      <Button variant="field" className="h-14 rounded-full text-base font-black" onClick={startFarmerLogin}><Sprout />{t.farmer}</Button>
       <Button variant="secondaryFarm" className="h-14 rounded-full text-base font-black" onClick={() => navigateTo("buyer")}><ShoppingCart />{t.buyer}</Button>
       <Button variant="secondaryFarm" className="h-14 rounded-full text-base font-black" onClick={() => navigateTo("labourer")}><Briefcase />{t.labourer}</Button>
     </div>
@@ -208,6 +242,27 @@ const Index = () => {
       </header>
 
       {role === "home" && <section className="mx-auto grid max-w-7xl gap-6 px-4 py-6 md:grid-cols-[1.1fr_0.9fr] md:py-10"><div className="rounded-[2rem] border border-glass-border bg-gradient-to-br from-card via-secondary/45 to-background p-6 shadow-glass md:p-10"><div className="mb-5 inline-flex items-center gap-2 rounded-full bg-secondary/60 px-4 py-2 text-sm font-black"><Globe2 className="size-4" /> EN · ಕನ್ನಡ · हिंदी</div><h1 className="font-display text-4xl font-black leading-tight md:text-6xl">{t.hero}</h1><p className="mt-4 max-w-2xl text-lg font-semibold text-muted-foreground">{t.sub}</p><div className="mt-7">{roleButtons}</div></div><div className="grid gap-4">{t.stats.map((stat) => <Card key={stat} title={stat} icon="🌾"><p className="text-sm font-bold text-muted-foreground">Live demand signal for Mysuru farmers</p></Card>)}<Button variant="secondaryFarm" className="h-14 rounded-full text-base font-black"><Mic />{t.voice}</Button></div></section>}
+
+      {role === "farmerAuth" && (
+        <section className="relative mx-auto flex min-h-[calc(100svh-4.5rem)] max-w-7xl items-center justify-center overflow-hidden px-4 py-6">
+          <div className="pointer-events-none absolute inset-0 flex items-center justify-center text-[18rem] opacity-[0.045] md:text-[28rem]">🌿</div>
+          <div className="relative grid w-full max-w-5xl gap-4 md:grid-cols-[1fr_0.95fr]">
+            <div className="rounded-[2rem] border border-glass-border bg-card/88 p-5 shadow-glass backdrop-blur-panel sm:p-7">
+              <div className="mb-5 flex items-center gap-3"><span className="flex size-14 items-center justify-center rounded-2xl bg-secondary/45 text-3xl shadow-control">👨‍🌾</span><div><p className="text-xs font-black uppercase text-muted-foreground">{login.title}</p><h1 className="font-display text-2xl font-black leading-tight sm:text-3xl">{authStep === "register" ? login.registerTitle : login.welcome}</h1><p className="mt-1 text-sm font-bold text-muted-foreground">{login.subtitle}</p></div></div>
+              {authStep === "phone" && <div className="space-y-4"><label className="grid gap-2 text-sm font-black"><span>{login.phonePlaceholder}</span><div className="flex min-h-12 overflow-hidden rounded-2xl border border-input bg-background shadow-control"><span className="flex min-w-16 items-center justify-center border-r border-input text-base font-black text-primary">+91</span><input type="tel" inputMode="numeric" value={phoneNumber} onChange={(e) => setPhoneNumber(e.target.value.replace(/\D/g, "").slice(0, 10))} placeholder={login.phonePlaceholder} className="min-h-12 w-full bg-transparent px-4 text-base font-black outline-none" /></div></label><Button variant="field" className="min-h-12 w-full rounded-2xl text-base font-black" onClick={requestOtp} disabled={phoneNumber.length < 10}><Phone />{login.btnRequest}</Button><button className="w-full text-sm font-black text-primary underline-offset-4 hover:underline" onClick={requestOtp}>{login.aadhaarLogin}</button></div>}
+              {authStep === "otp" && <div className="space-y-4"><div className="grid grid-cols-6 gap-2">{otp.map((digit, index) => <input key={index} value={digit} onChange={(e) => updateOtp(index, e.target.value)} inputMode="numeric" maxLength={1} aria-label={`OTP digit ${index + 1}`} className="aspect-square min-h-12 rounded-2xl border border-input bg-background text-center text-xl font-black outline-none focus:ring-2 focus:ring-ring" />)}</div><div className="flex items-center justify-between gap-3 rounded-2xl bg-secondary/30 p-3 text-sm font-black"><span>OTP · {phoneNumber ? `+91 ${phoneNumber}` : "Aadhaar"}</span><button disabled={resendTimer > 0} onClick={() => setResendTimer(60)} className="text-primary disabled:text-muted-foreground">{resendTimer > 0 ? `${resendTimer}s` : login.resend}</button></div><Button variant="field" className="min-h-12 w-full rounded-2xl text-base font-black" onClick={verifyOtp}><LockKeyhole />{login.btnVerify}</Button></div>}
+              {authStep === "success" && <div className="flex min-h-56 flex-col items-center justify-center rounded-[1.5rem] bg-secondary/30 p-6 text-center"><div className="growing-plant text-7xl">🌱</div><p className="mt-5 font-display text-2xl font-black text-primary">{login.profile}</p></div>}
+              <div className="mt-5 flex flex-col gap-3 border-t border-glass-border pt-4"><button className="text-sm font-black text-primary underline-offset-4 hover:underline" onClick={() => setAuthStep(authStep === "register" ? "phone" : "register")}>{authStep === "register" ? login.title : login.newMember}</button><span className="inline-flex items-center justify-center gap-2 rounded-full bg-background px-3 py-2 text-xs font-black text-muted-foreground"><ShieldCheck className="size-4 text-primary" />{login.secureNote}</span></div>
+            </div>
+            <form className="rounded-[2rem] border border-glass-border bg-card/72 p-5 shadow-control backdrop-blur-panel sm:p-7" onSubmit={(e) => { e.preventDefault(); setAuthStep("success"); }}>
+              <h2 className="mb-4 font-display text-xl font-black">{login.registerTitle}</h2>
+              <div className="grid gap-3">{[["name", login.fullName], ["crop", login.crop], ["fid", login.fid]].map(([key, label]) => <label key={key} className="grid gap-2 text-sm font-black"><span>{label}</span><input value={farmerProfile[key as keyof typeof farmerProfile]} onChange={(e) => setFarmerProfile((profile) => ({ ...profile, [key]: e.target.value }))} className="min-h-12 rounded-2xl border border-input bg-background px-4 text-base font-bold outline-none focus:ring-2 focus:ring-ring" /></label>)}<label className="grid gap-2 text-sm font-black"><span>{login.district}</span><select value={farmerProfile.district} onChange={(e) => setFarmerProfile((profile) => ({ ...profile, district: e.target.value }))} className="min-h-12 rounded-2xl border border-input bg-background px-4 text-base font-bold outline-none focus:ring-2 focus:ring-ring"><option>Mysuru</option><option>Mandya</option><option>Chamarajanagar</option><option>Kodagu</option><option>Hassan</option></select></label><Button type="submit" variant="secondaryFarm" className="mt-2 min-h-12 rounded-2xl text-base font-black"><UserRound />{login.register}</Button></div>
+            </form>
+          </div>
+        </section>
+      )}
+
+      {role === "farmerProfile" && <section className="mx-auto max-w-4xl px-4 py-6"><div className="rounded-[2rem] border border-glass-border bg-card/90 p-6 shadow-glass"><div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between"><div className="flex items-center gap-4"><span className="flex size-16 items-center justify-center rounded-2xl bg-secondary/45 text-4xl shadow-control">👨‍🌾</span><div><p className="text-sm font-black uppercase text-muted-foreground">{login.profile}</p><h1 className="font-display text-3xl font-black">{farmerProfile.name || "Farmer"}</h1><p className="font-bold text-muted-foreground">{farmerProfile.district} · {farmerProfile.crop || "Primary crop"}</p></div></div><Button variant="field" className="rounded-full" onClick={() => navigateTo("farmer")}>{login.dashboard}</Button></div><div className="mt-6 grid gap-3 sm:grid-cols-3"><p className="rounded-2xl bg-secondary/30 p-4 font-black">FID<br /><span className="text-muted-foreground">{farmerProfile.fid || "Not linked"}</span></p><p className="rounded-2xl bg-secondary/30 p-4 font-black">Mobile<br /><span className="text-muted-foreground">+91 {phoneNumber || "Verified"}</span></p><p className="rounded-2xl bg-secondary/30 p-4 font-black">Status<br /><span className="text-primary">Verified</span></p></div><Button variant="ghost" className="mt-5 rounded-full" onClick={startFarmerLogin}>{login.logout}</Button></div></section>}
 
       {role === "farmer" && (
         <section className="mx-auto max-w-7xl px-4 py-5">
