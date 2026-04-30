@@ -319,6 +319,10 @@ const Index = () => {
                 {t.tabs[tab]}
               </Button>
             ))}
+            <Button variant="glass" className="rounded-full" onClick={() => navigateTo("farmerProfile")}>
+              <UserRound />
+              {login.profile}
+            </Button>
           </div>
 
           {farmerTab === "field" ? (
