@@ -163,6 +163,7 @@ const Index = () => {
   const t = copy[language];
   const labourLabels = labourCopy[language];
   const login = loginLabels[language];
+  const profileText = profileLabels[language];
 
   useEffect(() => {
     document.documentElement.classList.toggle("dark", theme === "dark");
@@ -210,10 +211,12 @@ const Index = () => {
     if (event.key === "Backspace" && !otp[index] && index > 0) otpRefs.current[index - 1]?.focus();
   };
   const logoutFarmer = () => {
+    localStorage.removeItem("krishi-farmer-session");
     setPhoneNumber("");
     setOtp(Array(6).fill(""));
     setAuthStep("phone");
-    navigateTo("home");
+    setHistory([]);
+    setRole("home");
   };
   const startFarmerLogin = () => {
     setAuthStep("phone");
