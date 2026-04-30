@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { ArrowLeft, Briefcase, Calendar, CheckCircle, CloudSun, Globe2, IndianRupee, Leaf, LockKeyhole, Map, MapPin, Mic, Moon, Package, Phone, Search, ShieldCheck, ShoppingCart, Sprout, Sun, UserRound, Users, X } from "lucide-react";
 import { Area, AreaChart, ResponsiveContainer } from "recharts";
 import { Button } from "@/components/ui/button";
@@ -13,7 +13,7 @@ type SchemeContent = { title: string; benefit: string; eligibility: string; desc
 type Scheme = Record<Language, SchemeContent> & { id: string };
 type ExportCropContent = { crop: string; destination: string; demand: string; profit: string; reason: string; tag: string; icon: string };
 type ExportCrop = { district: string; id: string; flags: string } & Record<Language, ExportCropContent>;
-type LabourJob = { id: number; title: Record<"en" | "kn", string>; location: Record<"en" | "kn", string>; wage: string; date: string; totalSlots: number; filledSlots: number; isApplied: boolean };
+type LabourJob = { id: number; title: Record<"en" | "kn", string>; location: Record<"en" | "kn", string>; wage: string; date: string; workTime?: string; perks?: string[]; totalSlots: number; filledSlots: number; isApplied: boolean };
 
 const copy = {
   en: {
@@ -61,6 +61,16 @@ const priceTrend = [{ v: 28 }, { v: 34 }, { v: 31 }, { v: 42 }, { v: 48 }, { v: 
 const initialLabourJobs: LabourJob[] = [
   { id: 1, title: { en: "Banana Harvesting", kn: "ಬಾಳೆಹಣ್ಣು ಕೊಯ್ಲು" }, location: { en: "Nanjangud, Mysuru", kn: "ನಂಜನಗೂಡು, ಮೈಸೂರು" }, wage: "650", date: "2026-05-12", totalSlots: 10, filledSlots: 7, isApplied: false },
   { id: 2, title: { en: "Coffee Bean Picking", kn: "ಕಾಫಿ ಬೀಜ ಆರಿಸುವುದು" }, location: { en: "Somwarpet, Kodagu", kn: "ಸೋಮವಾರಪೇಟೆ, ಕೊಡಗು" }, wage: "550", date: "2026-05-15", totalSlots: 20, filledSlots: 18, isApplied: false },
+  { id: 3, title: { en: "Silk Cocoon Sorting", kn: "ರೇಷ್ಮೆ ಗೂಡು ವಿಂಗಡಣೆ" }, location: { en: "Ramanagara / Mysuru", kn: "ರಾಮನಗರ / ಮೈಸೂರು" }, wage: "500", date: "2026-05-18", workTime: "9 AM - 5 PM", perks: ["meals"], totalSlots: 15, filledSlots: 5, isApplied: false },
+  { id: 4, title: { en: "Turmeric Cleaning & Boiling", kn: "ಅರಿಶಿನ ಸ್ವಚ್ಛಗೊಳಿಸುವಿಕೆ" }, location: { en: "Chamarajanagar", kn: "ಚಾಮರಾಜನಗರ" }, wage: "700", date: "2026-05-20", workTime: "8 AM - 4 PM", perks: ["meals", "transport"], totalSlots: 12, filledSlots: 2, isApplied: false },
+  { id: 5, title: { en: "Areca Nut Peeling", kn: "ಅಡಿಕೆ ಸುಲಿಯುವುದು" }, location: { en: "Shivamogga / Chikmagalur", kn: "ಶಿವಮೊಗ್ಗ / ಚಿಕ್ಕಮಗಳೂರು" }, wage: "450", date: "2026-05-22", workTime: "8 AM - 5 PM", perks: ["equipment"], totalSlots: 30, filledSlots: 25, isApplied: false },
+  { id: 6, title: { en: "Sugarcane Cutting", kn: "ಕಬ್ಬು ಕಟಾವು ಮಾಡುವುದು" }, location: { en: "Mandya", kn: "ಮಂಡ್ಯ" }, wage: "800", date: "2026-05-14", workTime: "6 AM - 2 PM", perks: ["transport", "meals"], totalSlots: 25, filledSlots: 10, isApplied: false },
+  { id: 7, title: { en: "Black Pepper Harvesting", kn: "ಕಪ್ಪು ಮೆಣಸು ಕೊಯ್ಲು" }, location: { en: "Madikeri, Kodagu", kn: "ಮಡಿಕೇರಿ, ಕೊಡಗು" }, wage: "600", date: "2026-05-25", workTime: "8 AM - 4 PM", perks: ["equipment", "meals"], totalSlots: 8, filledSlots: 3, isApplied: false },
+  { id: 8, title: { en: "Tobacco Leaf Curing", kn: "ಹೊಗೆಸೊಪ್ಪು ಹದ ಮಾಡುವುದು" }, location: { en: "Hunsur / Periyapatna", kn: "ಹುಣಸೂರು / ಪಿರಿಯಾಪಟ್ಟಣ" }, wage: "750", date: "2026-05-16", workTime: "10 AM - 6 PM", perks: ["transport"], totalSlots: 20, filledSlots: 12, isApplied: false },
+  { id: 9, title: { en: "Jasmine Flower Plucking", kn: "ಮಲ್ಲಿಗೆ ಹೂವು ಕೀಳುವುದು" }, location: { en: "Mysuru City Outskirts", kn: "ಮೈಸೂರು ಹೊರವಲಯ" }, wage: "400", date: "2026-05-11", workTime: "5 AM - 10 AM", perks: ["transport"], totalSlots: 50, filledSlots: 40, isApplied: false },
+  { id: 10, title: { en: "Tractor Driver", kn: "ಟ್ರಾಕ್ಟರ್ ಚಾಲಕ" }, location: { en: "K.R. Nagar", kn: "ಕೆ.ಆರ್. ನಗರ" }, wage: "900", date: "2026-05-13", workTime: "8 AM - 5 PM", perks: ["meals"], totalSlots: 2, filledSlots: 1, isApplied: false },
+  { id: 11, title: { en: "Warehouse Loading", kn: "ಗೋದಾಮು ಲೋಡಿಂಗ್" }, location: { en: "APMC Bandipalya, Mysuru", kn: "ಬಂದಿಪಾಳ್ಯ ಎಪಿಎಂಸಿ" }, wage: "850", date: "2026-05-14", workTime: "9 AM - 6 PM", perks: ["equipment"], totalSlots: 40, filledSlots: 20, isApplied: false },
+  { id: 12, title: { en: "Drip Irrigation Setup", kn: "ಹನಿ ನೀರಾವರಿ ಅಳವಡಿಕೆ" }, location: { en: "T. Narasipura", kn: "ಟಿ. ನರಸೀಪುರ" }, wage: "750", date: "2026-05-19", workTime: "8 AM - 4 PM", perks: ["transport", "equipment"], totalSlots: 5, filledSlots: 0, isApplied: false },
 ];
 const labourCopy = {
   en: { wage: "per day", apply: "Apply Now", applied: "Applied", slots: "Slots Left", find: "Find Nearby Work" },
