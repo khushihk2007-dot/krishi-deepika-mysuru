@@ -2,7 +2,7 @@ import { useEffect, useMemo, useRef, useState, type KeyboardEvent } from "react"
 import { ArrowLeft, Award, Briefcase, Calendar, CheckCircle, CloudSun, Globe2, IndianRupee, Leaf, LockKeyhole, LogOut, Map, MapPin, Mic, Moon, Package, Phone, Search, ShieldCheck, ShoppingCart, Sprout, Star, Sun, Tractor, User, UserRound, Users, X } from "lucide-react";
 import { Area, AreaChart, ResponsiveContainer } from "recharts";
 import { Button } from "@/components/ui/button";
-import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
 import { FieldIntelligencePanel } from "@/components/FieldIntelligencePanel";
 import { KrishiMap } from "@/components/KrishiMap";
 import { getRegionContent, Language, RegionId, regions } from "@/data/krishiMysuru";
