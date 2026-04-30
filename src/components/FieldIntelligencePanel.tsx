@@ -87,7 +87,7 @@ export function FieldIntelligencePanel({ region, regionId, language, isExpanded,
   const isAcidic = region.ph < 6;
 
   return (
-    <aside className={`fixed bottom-0 left-0 right-0 z-[900] overflow-y-auto rounded-t-lg border border-glass-border bg-glass/94 p-4 text-glass-foreground shadow-glass backdrop-blur-panel animate-sheet-in md:bottom-6 md:left-auto md:right-6 md:top-6 md:max-h-[calc(100vh-3rem)] md:w-[410px] md:rounded-lg md:p-5 md:animate-panel-in ${isExpanded ? "max-h-[72vh]" : "max-h-[148px]"}`}>
+    <aside className={`absolute bottom-0 left-0 right-0 z-[820] overflow-y-auto rounded-t-lg border border-glass-border bg-glass/94 p-4 text-glass-foreground shadow-glass backdrop-blur-panel animate-sheet-in md:bottom-6 md:left-auto md:right-6 md:top-6 md:max-h-[calc(100%-3rem)] md:w-[410px] md:rounded-lg md:p-5 md:animate-panel-in ${isExpanded ? "max-h-[72vh]" : "max-h-[148px]"}`}>
       <button className="mx-auto mb-3 block h-1.5 w-16 rounded-full bg-muted-foreground/45 md:hidden" aria-label="Toggle field information" type="button" onClick={onToggle} />
       <div className="mb-5 flex items-start justify-between gap-4">
         <div className="flex min-w-0 items-center gap-3">
