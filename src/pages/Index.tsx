@@ -1,7 +1,8 @@
 import { useEffect, useMemo, useRef, useState, type KeyboardEvent } from "react";
-import { ArrowLeft, Briefcase, Calendar, CheckCircle, CloudSun, Globe2, IndianRupee, Leaf, LockKeyhole, Map, MapPin, Mic, Moon, Package, Phone, Search, ShieldCheck, ShoppingCart, Sprout, Sun, UserRound, Users, X } from "lucide-react";
+import { ArrowLeft, Award, Briefcase, Calendar, CheckCircle, CloudSun, Globe2, IndianRupee, Leaf, LockKeyhole, LogOut, Map, MapPin, Mic, Moon, Package, Phone, Search, ShieldCheck, ShoppingCart, Sprout, Star, Sun, Tractor, User, UserRound, Users, X } from "lucide-react";
 import { Area, AreaChart, ResponsiveContainer } from "recharts";
 import { Button } from "@/components/ui/button";
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
 import { FieldIntelligencePanel } from "@/components/FieldIntelligencePanel";
 import { KrishiMap } from "@/components/KrishiMap";
 import { getRegionContent, Language, RegionId, regions } from "@/data/krishiMysuru";
@@ -83,6 +84,21 @@ const loginLabels = {
   kn: { title: "ರೈತರ ಲಾಗಿನ್", welcome: "ಮತ್ತೆ ಸ್ವಾಗತ, ರೈತರೆ", subtitle: "ನಿಮ್ಮ ಸ್ಮಾರ್ಟ್ ಫಾರ್ಮ್ ಮಾಹಿತಿಯನ್ನು ಪ್ರವೇಶಿಸಿ", phonePlaceholder: "10-ಅಂಕಿಯ ಮೊಬೈಲ್ ಸಂಖ್ಯೆಯನ್ನು ನಮೂದಿಸಿ", aadhaarLogin: "ಆಧಾರ್ ಸಂಖ್ಯೆಯಿಂದ ಲಾಗಿನ್", btnRequest: "OTP ಕಳುಹಿಸಿ", btnVerify: "ಪರಿಶೀಲಿಸಿ ಮತ್ತು ಪ್ರವೇಶಿಸಿ", resend: "OTP ಮತ್ತೆ ಕಳುಹಿಸಿ", newMember: "ಹೊಸ ರೈತರೇ? ಖಾತೆಯನ್ನು ರಚಿಸಿ", registerTitle: "ರೈತರ ಖಾತೆ ರಚಿಸಿ", fullName: "ಪೂರ್ಣ ಹೆಸರು", district: "ಜಿಲ್ಲೆ", crop: "ಮುಖ್ಯ ಬೆಳೆ", fid: "ನಿಮ್ಮ FID (ರೈತ ಐಡಿ) ಲಿಂಕ್ ಮಾಡಿ", register: "ನೋಂದಣಿ ಮಾಡಿ", secureNote: "ನಿಮ್ಮ ಡೇಟಾ ಸುರಕ್ಷಿತವಾಗಿದೆ", profile: "ರೈತರ ಪ್ರೊಫೈಲ್", dashboard: "ರೈತ ಡ್ಯಾಶ್‌ಬೋರ್ಡ್‌ಗೆ ಹೋಗಿ", logout: "ಲಾಗೌಟ್" },
   hi: { title: "किसान लॉगिन", welcome: "वापसी पर स्वागत है, किसान", subtitle: "अपनी स्मार्ट फार्म जानकारी देखें", phonePlaceholder: "10 अंकों का मोबाइल नंबर डालें", aadhaarLogin: "आधार नंबर से लॉगिन", btnRequest: "OTP भेजें", btnVerify: "सत्यापित करें", resend: "OTP फिर भेजें", newMember: "नए किसान? खाता बनाएँ", registerTitle: "किसान खाता बनाएँ", fullName: "पूरा नाम", district: "जिला", crop: "मुख्य फसल", fid: "अपना FID (Farmer ID) लिंक करें", register: "रजिस्टर करें", secureNote: "आपका डेटा सुरक्षित है", profile: "किसान प्रोफाइल", dashboard: "किसान डैशबोर्ड खोलें", logout: "लॉगआउट" },
 } as const;
+
+const profileLabels = {
+  en: { title: "Professional Farmer Profile", verified: "Verified Farmer", fid: "Unique Farmer ID", member: "Member Since", location: "Location", experience: "Experience", land: "Land Area", crops: "Primary Crops", soil: "Soil Health", gi: "GI-Tag Crop Highlight", rating: "Community Rating", achievements: "Achievements", portfolio: "Digital Farm Card", logout: "Logout", confirmTitle: "Are you sure you want to logout?", confirmBody: "Your secure farmer session will be cleared and you will return to role selection.", cancel: "Cancel", confirm: "Yes, logout" },
+  kn: { title: "ವೃತ್ತಿಪರ ರೈತ ಪ್ರೊಫೈಲ್", verified: "ಪರಿಶೀಲಿಸಿದ ರೈತ", fid: "ವಿಶಿಷ್ಟ ರೈತ ಐಡಿ", member: "ಸದಸ್ಯರಾದ ವರ್ಷ", location: "ಸ್ಥಳ", experience: "ಅನುಭವ", land: "ಭೂಮಿ ವಿಸ್ತೀರ್ಣ", crops: "ಮುಖ್ಯ ಬೆಳೆಗಳು", soil: "ಮಣ್ಣಿನ ಆರೋಗ್ಯ", gi: "ಜಿಐ ಟ್ಯಾಗ್ ಬೆಳೆ ವಿಶೇಷತೆ", rating: "ಸಮುದಾಯ ರೇಟಿಂಗ್", achievements: "ಸಾಧನೆಗಳು", portfolio: "ಡಿಜಿಟಲ್ ಫಾರ್ಮ್ ಕಾರ್ಡ್", logout: "ಲಾಗ್ ಔಟ್", confirmTitle: "ನೀವು ಲಾಗ್ ಔಟ್ ಮಾಡಲು ಖಚಿತವಾಗಿ ಬಯಸುವಿರಾ?", confirmBody: "ನಿಮ್ಮ ಸುರಕ್ಷಿತ ರೈತ ಸೆಷನ್ ತೆರವುಗೊಳ್ಳುತ್ತದೆ ಮತ್ತು ಪಾತ್ರ ಆಯ್ಕೆ ಪುಟಕ್ಕೆ ಮರಳುತ್ತೀರಿ.", cancel: "ರದ್ದು", confirm: "ಹೌದು, ಲಾಗ್ ಔಟ್" },
+  hi: { title: "Professional Farmer Profile", verified: "Verified Farmer", fid: "Unique Farmer ID", member: "Member Since", location: "Location", experience: "Experience", land: "Land Area", crops: "Primary Crops", soil: "Soil Health", gi: "GI-Tag Crop Highlight", rating: "Community Rating", achievements: "Achievements", portfolio: "Digital Farm Card", logout: "Logout", confirmTitle: "Are you sure you want to logout?", confirmBody: "Your secure farmer session will be cleared and you will return to role selection.", cancel: "Cancel", confirm: "Yes, logout" },
+} as const;
+
+const professionalFarmer = {
+  name: "Basavaraju M",
+  fid: "KA-MYS-2026-889",
+  location: { en: "Nanjangud, Mysuru", kn: "ನಂಜನಗೂಡು, ಮೈಸೂರು", hi: "Nanjangud, Mysuru" },
+  experience: "15 Years",
+  achievements: ["Organic Pioneer", "Top Employer", "Quality Certified", "Best Yield 2025"],
+  farm: { size: "4.5 Acres", soil: { en: "Red Clayey Loam", kn: "ಕೆಂಪು ಜೇಡಿ ಮಣ್ಣು", hi: "Red Clayey Loam" }, crops: ["Banana", "Silk"] },
+};
 
 const governmentSchemes = [
   { id: "pm_kisan", en: { title: "PM-KISAN", benefit: "₹6,000 yearly", eligibility: "Landholding farmers", description: "Direct income support in 3 equal installments.", tag: "Central Sector", icon: "💰" }, kn: { title: "ಪಿಎಂ-ಕಿಸಾನ್", benefit: "ವರ್ಷಕ್ಕೆ ₹6,000", eligibility: "ಭೂಮಿ ಹೊಂದಿರುವ ರೈತರು", description: "3 ಸಮಾನ ಕಂತುಗಳಲ್ಲಿ ನೇರ ಆದಾಯ ಬೆಂಬಲ.", tag: "ಕೇಂದ್ರ ವಲಯ", icon: "💰" }, hi: { title: "पीएम-किसान", benefit: "₹6,000 प्रति वर्ष", eligibility: "भूमि रखने वाले किसान", description: "3 समान किस्तों में सीधा आय समर्थन।", tag: "केंद्रीय क्षेत्र", icon: "💰" } },
