@@ -139,6 +139,7 @@ const Index = () => {
   const [authStep, setAuthStep] = useState<"phone" | "otp" | "success" | "register">("phone");
   const [phoneNumber, setPhoneNumber] = useState("");
   const [otp, setOtp] = useState(Array(6).fill(""));
+  const otpRefs = useRef<Array<HTMLInputElement | null>>([]);
   const [resendTimer, setResendTimer] = useState(60);
   const [farmerProfile, setFarmerProfile] = useState({ name: "", district: "Mysuru", crop: "Tomato", fid: "" });
   const selectedRegion = regions[selectedId];
@@ -177,12 +178,27 @@ const Index = () => {
     setFarmerTab(previous.farmerTab);
   };
   const handleApplyJob = (id: number) => setLabourJobs((jobs) => jobs.map((job) => job.id === id ? { ...job, isApplied: true, filledSlots: Math.min(job.totalSlots, job.filledSlots + 1) } : job));
+  const goFarmerTab = (tab: FarmerTab) => navigateTo("farmer", tab);
   const requestOtp = () => {
     setAuthStep("otp");
     setResendTimer(60);
+    window.setTimeout(() => otpRefs.current[0]?.focus(), 80);
   };
   const verifyOtp = () => setAuthStep("success");
-  const updateOtp = (index: number, value: string) => setOtp((digits) => digits.map((digit, current) => current === index ? value.replace(/\D/g, "").slice(-1) : digit));
+  const updateOtp = (index: number, value: string) => {
+    const digit = value.replace(/\D/g, "").slice(-1);
+    setOtp((digits) => digits.map((currentDigit, current) => current === index ? digit : currentDigit));
+    if (digit && index < 5) otpRefs.current[index + 1]?.focus();
+  };
+  const handleOtpKeyDown = (index: number, event: React.KeyboardEvent<HTMLInputElement>) => {
+    if (event.key === "Backspace" && !otp[index] && index > 0) otpRefs.current[index - 1]?.focus();
+  };
+  const logoutFarmer = () => {
+    setPhoneNumber("");
+    setOtp(Array(6).fill(""));
+    setAuthStep("phone");
+    navigateTo("home");
+  };
   const startFarmerLogin = () => {
     setAuthStep("phone");
     navigateTo("farmerAuth");
