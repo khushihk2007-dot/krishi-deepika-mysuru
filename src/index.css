@@ -31,6 +31,9 @@ All colors MUST be HSL.
     --accent: 48 96% 58%;
     --accent-foreground: 0 0% 18%;
 
+    --earth: 16 22% 47%;
+    --earth-foreground: 0 0% 100%;
+
     --destructive: 4 78% 50%;
     --destructive-foreground: 0 0% 100%;
 
@@ -177,5 +180,12 @@ All colors MUST be HSL.
     .growing-plant {
       animation: none;
     }
+  }
+
+  .glass-card {
+    @apply bg-glass/70 border border-glass-border backdrop-blur-panel shadow-glass;
+  }
+  .lift-btn {
+    @apply transition-all duration-200 hover:-translate-y-0.5 hover:shadow-lg active:translate-y-0;
   }
 }
