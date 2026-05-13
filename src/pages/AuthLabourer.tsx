@@ -34,6 +34,7 @@ export default function AuthLabourer() {
     if (skills.length) {
       await supabase.from("labourer_skills").upsert(
         skills.map((s) => ({ user_id: res.userId!, skill: s })),
+        { onConflict: "user_id,skill", ignoreDuplicates: true },
       );
     }
     toast.success("Welcome!");
