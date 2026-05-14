@@ -6,6 +6,7 @@ import { useAuth } from "@/hooks/useAuth";
 import { useLang } from "@/hooks/useLang";
 import { supabase } from "@/integrations/supabase/client";
 import { Sprout, LogOut } from "lucide-react";
+import { SellMyCrop } from "@/components/sell/SellMyCrop";
 
 export default function Dashboard() {
   const { user, loading, signOut } = useAuth();
@@ -42,7 +43,7 @@ export default function Dashboard() {
           </Button>
         </div>
       </header>
-      <main className="mx-auto max-w-4xl px-4 py-10">
+      <main className="mx-auto max-w-5xl space-y-8 px-4 py-10">
         <div className="glass-card rounded-2xl p-8">
           <h1 className="text-3xl font-bold">{t("dash.title")}{profile?.full_name ? `, ${profile.full_name}` : ""} 👋</h1>
           <p className="mt-2 text-muted-foreground">{t("dash.sub")}</p>
@@ -53,6 +54,7 @@ export default function Dashboard() {
             </div>
           )}
         </div>
+        {profile?.role === "farmer" && <SellMyCrop />}
       </main>
     </div>
   );
