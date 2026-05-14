@@ -6,6 +6,7 @@ import { useAuth } from "@/hooks/useAuth";
 import { useLang } from "@/hooks/useLang";
 import { supabase } from "@/integrations/supabase/client";
 import { Sprout, LogOut } from "lucide-react";
+import { SellMyCrop } from "@/components/sell/SellMyCrop";
 
 export default function Dashboard() {
   const { user, loading, signOut } = useAuth();
