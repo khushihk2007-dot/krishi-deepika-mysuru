@@ -35,6 +35,48 @@ export type Database = {
         }
         Relationships: []
       }
+      crop_listings: {
+        Row: {
+          created_at: string
+          crop: string
+          id: string
+          notes: string | null
+          price_per_unit: number | null
+          quantity: number
+          status: string
+          transport_needed: boolean
+          unit: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          crop: string
+          id?: string
+          notes?: string | null
+          price_per_unit?: number | null
+          quantity: number
+          status?: string
+          transport_needed?: boolean
+          unit?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          crop?: string
+          id?: string
+          notes?: string | null
+          price_per_unit?: number | null
+          quantity?: number
+          status?: string
+          transport_needed?: boolean
+          unit?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       farmer_details: {
         Row: {
           created_at: string
@@ -116,6 +158,68 @@ export type Database = {
         }
         Relationships: []
       }
+      vehicle_bookings: {
+        Row: {
+          created_at: string
+          distance_km: number
+          drop_mandi: Database["public"]["Enums"]["mandi_destination"]
+          estimated_cost: number
+          id: string
+          listing_id: string | null
+          pickup_label: string | null
+          pickup_lat: number | null
+          pickup_lng: number | null
+          scheduled_at: string | null
+          share_load: boolean
+          status: Database["public"]["Enums"]["booking_status"]
+          updated_at: string
+          user_id: string
+          vehicle: Database["public"]["Enums"]["vehicle_type"]
+        }
+        Insert: {
+          created_at?: string
+          distance_km: number
+          drop_mandi: Database["public"]["Enums"]["mandi_destination"]
+          estimated_cost: number
+          id?: string
+          listing_id?: string | null
+          pickup_label?: string | null
+          pickup_lat?: number | null
+          pickup_lng?: number | null
+          scheduled_at?: string | null
+          share_load?: boolean
+          status?: Database["public"]["Enums"]["booking_status"]
+          updated_at?: string
+          user_id: string
+          vehicle: Database["public"]["Enums"]["vehicle_type"]
+        }
+        Update: {
+          created_at?: string
+          distance_km?: number
+          drop_mandi?: Database["public"]["Enums"]["mandi_destination"]
+          estimated_cost?: number
+          id?: string
+          listing_id?: string | null
+          pickup_label?: string | null
+          pickup_lat?: number | null
+          pickup_lng?: number | null
+          scheduled_at?: string | null
+          share_load?: boolean
+          status?: Database["public"]["Enums"]["booking_status"]
+          updated_at?: string
+          user_id?: string
+          vehicle?: Database["public"]["Enums"]["vehicle_type"]
+        }
+        Relationships: [
+          {
+            foreignKeyName: "vehicle_bookings_listing_id_fkey"
+            columns: ["listing_id"]
+            isOneToOne: false
+            referencedRelation: "crop_listings"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Views: {
       [_ in never]: never
@@ -125,12 +229,23 @@ export type Database = {
     }
     Enums: {
       app_role: "farmer" | "buyer" | "labourer"
+      booking_status: "booked" | "out_for_pickup" | "at_mandi" | "sold"
       labour_skill:
         | "harvesting"
         | "sowing"
         | "ploughing"
         | "machine_operator"
         | "loading"
+      mandi_destination:
+        | "bandipalya_apmc"
+        | "maddur_coconut"
+        | "ramanagara_silk"
+        | "chamarajanagar_turmeric"
+      vehicle_type:
+        | "tata_ace"
+        | "mahindra_bolero"
+        | "eicher_14ft"
+        | "tractor_trailer"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -259,12 +374,25 @@ export const Constants = {
   public: {
     Enums: {
       app_role: ["farmer", "buyer", "labourer"],
+      booking_status: ["booked", "out_for_pickup", "at_mandi", "sold"],
       labour_skill: [
         "harvesting",
         "sowing",
         "ploughing",
         "machine_operator",
         "loading",
+      ],
+      mandi_destination: [
+        "bandipalya_apmc",
+        "maddur_coconut",
+        "ramanagara_silk",
+        "chamarajanagar_turmeric",
+      ],
+      vehicle_type: [
+        "tata_ace",
+        "mahindra_bolero",
+        "eicher_14ft",
+        "tractor_trailer",
       ],
     },
   },
