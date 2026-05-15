@@ -17,19 +17,25 @@ export type Database = {
       buyer_details: {
         Row: {
           business_id: string | null
+          company_name: string | null
           created_at: string
+          primary_interest: string | null
           updated_at: string
           user_id: string
         }
         Insert: {
           business_id?: string | null
+          company_name?: string | null
           created_at?: string
+          primary_interest?: string | null
           updated_at?: string
           user_id: string
         }
         Update: {
           business_id?: string | null
+          company_name?: string | null
           created_at?: string
+          primary_interest?: string | null
           updated_at?: string
           user_id?: string
         }
@@ -236,6 +242,8 @@ export type Database = {
         | "ploughing"
         | "machine_operator"
         | "loading"
+        | "pesticide_spraying"
+        | "tractor_driving"
       mandi_destination:
         | "bandipalya_apmc"
         | "maddur_coconut"
@@ -381,6 +389,8 @@ export const Constants = {
         "ploughing",
         "machine_operator",
         "loading",
+        "pesticide_spraying",
+        "tractor_driving",
       ],
       mandi_destination: [
         "bandipalya_apmc",
