@@ -9,7 +9,6 @@ import Welcome from "./pages/Welcome.tsx";
 import AuthFarmer from "./pages/AuthFarmer.tsx";
 import AuthBuyer from "./pages/AuthBuyer.tsx";
 import AuthLabourer from "./pages/AuthLabourer.tsx";
-import Login from "./pages/Login.tsx";
 import Dashboard from "./pages/Dashboard.tsx";
 import WorkFeed from "./pages/WorkFeed.tsx";
 
@@ -27,7 +26,6 @@ const App = () => (
           <Route path="/auth/farmer" element={<AuthFarmer />} />
           <Route path="/auth/buyer" element={<AuthBuyer />} />
           <Route path="/auth/labourer" element={<AuthLabourer />} />
-          <Route path="/login" element={<Login />} />
           <Route path="/dashboard" element={<Dashboard />} />
           <Route path="/work-feed" element={<WorkFeed />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}

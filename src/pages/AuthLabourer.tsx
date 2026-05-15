@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -13,7 +13,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { ArrowLeft, User, HardHat } from "lucide-react";
 import { toast } from "sonner";
 
-const SKILLS: Skill[] = ["harvesting", "sowing", "pesticide_spraying", "tractor_driving"];
+const SKILLS: Skill[] = ["harvesting", "sowing", "ploughing", "machine_operator", "loading"];
 
 export default function AuthLabourer() {
   const { t, lang } = useLang();
@@ -43,7 +43,7 @@ export default function AuthLabourer() {
 
   return (
     <AuthShell>
-      <div className="rounded-2xl border-2 border-earth/40 bg-card p-6 shadow-glass sm:p-8">
+      <div className="rounded-2xl border-2 border-earth/40 bg-card p-6 shadow-glass sm:p-8 animate-sheet-in">
         <div className="mb-6 flex items-center gap-3">
           <span className="flex h-12 w-12 items-center justify-center rounded-xl bg-earth text-earth-foreground">
             <HardHat className="h-6 w-6" />
@@ -104,13 +104,6 @@ export default function AuthLabourer() {
             </Button>
           </div>
         )}
-
-        <p className="mt-6 text-center text-sm text-muted-foreground">
-          {t("cta.haveAccount")}{" "}
-          <Link to="/login" className="font-semibold text-primary hover:underline">
-            {t("cta.loginLink")}
-          </Link>
-        </p>
       </div>
     </AuthShell>
   );

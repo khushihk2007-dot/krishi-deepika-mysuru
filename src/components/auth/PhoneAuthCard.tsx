@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -11,22 +11,15 @@ import { OtpGrid } from "@/components/auth/OtpGrid";
 import { useLang } from "@/hooks/useLang";
 import { useOtpAuth, type Role } from "@/hooks/useOtpAuth";
 import { supabase } from "@/integrations/supabase/client";
-import { ArrowLeft, User, MapPin, Building2 } from "lucide-react";
+import { ArrowLeft, User, MapPin } from "lucide-react";
 import { toast } from "sonner";
 
 const DISTRICTS = ["Mysuru", "Mandya", "Hassan", "Chamarajanagar", "Kodagu", "Bengaluru Rural"];
-const INTERESTS = [
-  { value: "fruits", labelKey: "interest.fruits" },
-  { value: "silk", labelKey: "interest.silk" },
-  { value: "spices", labelKey: "interest.spices" },
-  { value: "grains", labelKey: "interest.grains" },
-] as const;
 
 interface ExtraField {
   key: string;
-  labelKey: "auth.primaryCrop" | "auth.farmerId" | "auth.businessId" | "auth.companyName" | "auth.primaryInterest";
+  labelKey: "auth.primaryCrop" | "auth.farmerId" | "auth.businessId";
   required?: boolean;
-  type?: "text" | "interest";
 }
 
 interface Props {
@@ -59,6 +52,7 @@ export function PhoneAuthCard({ role, extraFields, redirectTo }: Props) {
     if (!res.ok || !res.userId) return;
 
     if (mode === "signup") {
+      // role-specific details
       if (role === "farmer") {
         await supabase.from("farmer_details").upsert({
           user_id: res.userId,
@@ -69,8 +63,6 @@ export function PhoneAuthCard({ role, extraFields, redirectTo }: Props) {
         await supabase.from("buyer_details").upsert({
           user_id: res.userId,
           business_id: extra["business_id"] ?? null,
-          company_name: extra["company_name"] ?? null,
-          primary_interest: extra["primary_interest"] ?? null,
         });
       }
     }
@@ -80,7 +72,7 @@ export function PhoneAuthCard({ role, extraFields, redirectTo }: Props) {
 
   return (
     <AuthShell>
-      <div className="glass-card rounded-2xl p-6 sm:p-8">
+      <div className="glass-card rounded-2xl p-6 sm:p-8 animate-sheet-in">
         {a.step === "otp" ? (
           <div className="space-y-6">
             <button
@@ -112,45 +104,17 @@ export function PhoneAuthCard({ role, extraFields, redirectTo }: Props) {
               <Field icon={<User className="h-4 w-4" />} label={t("auth.fullName")}>
                 <Input value={fullName} onChange={(e) => setFullName(e.target.value)} placeholder="Ramesh K." />
               </Field>
-              {extraFields.filter((f) => f.key === "company_name").map((f) => (
-                <Field key={f.key} icon={<Building2 className="h-4 w-4" />} label={t(f.labelKey)}>
+              <Field label={t("auth.phone")}>
+                <PhoneInput value={a.phone} onChange={a.setPhone} />
+              </Field>
+              {extraFields.map((f) => (
+                <Field key={f.key} label={t(f.labelKey)}>
                   <Input
                     value={extra[f.key] ?? ""}
                     onChange={(e) => setExtra((s) => ({ ...s, [f.key]: e.target.value }))}
                   />
                 </Field>
               ))}
-              <Field label={t("auth.phone")}>
-                <PhoneInput value={a.phone} onChange={a.setPhone} />
-              </Field>
-              {extraFields
-                .filter((f) => f.key !== "company_name")
-                .map((f) =>
-                  f.type === "interest" ? (
-                    <Field key={f.key} label={t(f.labelKey)}>
-                      <Select
-                        value={extra[f.key] ?? ""}
-                        onValueChange={(v) => setExtra((s) => ({ ...s, [f.key]: v }))}
-                      >
-                        <SelectTrigger>
-                          <SelectValue placeholder="—" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          {INTERESTS.map((i) => (
-                            <SelectItem key={i.value} value={i.value}>{t(i.labelKey)}</SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
-                    </Field>
-                  ) : (
-                    <Field key={f.key} label={t(f.labelKey)}>
-                      <Input
-                        value={extra[f.key] ?? ""}
-                        onChange={(e) => setExtra((s) => ({ ...s, [f.key]: e.target.value }))}
-                      />
-                    </Field>
-                  ),
-                )}
               <Field icon={<MapPin className="h-4 w-4" />} label={t("auth.district")}>
                 <Select value={district} onValueChange={setDistrict}>
                   <SelectTrigger>
@@ -179,13 +143,6 @@ export function PhoneAuthCard({ role, extraFields, redirectTo }: Props) {
             </TabsContent>
           </Tabs>
         )}
-
-        <p className="mt-6 text-center text-sm text-muted-foreground">
-          {t("cta.haveAccount")}{" "}
-          <Link to="/login" className="font-semibold text-primary hover:underline">
-            {t("cta.loginLink")}
-          </Link>
-        </p>
       </div>
     </AuthShell>
   );
