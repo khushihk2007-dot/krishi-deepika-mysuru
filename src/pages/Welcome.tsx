@@ -57,11 +57,12 @@ export default function Welcome() {
                 key={r.to}
                 to={r.to}
                 className={cn(
-                  "group relative flex flex-col items-start gap-4 overflow-hidden rounded-2xl border border-glass-border bg-gradient-to-br p-6 shadow-glass backdrop-blur-panel lift-btn",
+                  "group relative flex flex-col items-start gap-4 overflow-hidden border border-glass-border bg-gradient-to-br p-7 shadow-glass backdrop-blur-panel lift-btn",
+                  "rounded-tl-[3rem] rounded-br-[3rem] rounded-tr-2xl rounded-bl-2xl",
                   r.accent,
                 )}
               >
-                <span className={cn("flex h-14 w-14 items-center justify-center rounded-xl shadow-control", r.iconBg)}>
+                <span className={cn("flex h-14 w-14 items-center justify-center rounded-tl-2xl rounded-br-2xl rounded-tr-md rounded-bl-md shadow-control", r.iconBg)}>
                   <Icon className="h-7 w-7" />
                 </span>
                 <div>
@@ -75,6 +76,13 @@ export default function Welcome() {
             );
           })}
         </div>
+
+        <p className="mt-10 text-center text-sm text-muted-foreground">
+          {t("cta.haveAccount")}{" "}
+          <Link to="/login" className="font-semibold text-primary hover:underline">
+            {t("cta.loginLink")}
+          </Link>
+        </p>
       </main>
     </div>
   );

@@ -104,6 +104,13 @@ export default function AuthLabourer() {
             </Button>
           </div>
         )}
+
+        <p className="mt-6 text-center text-sm text-muted-foreground">
+          {t("cta.haveAccount")}{" "}
+          <Link to="/login" className="font-semibold text-primary hover:underline">
+            {t("cta.loginLink")}
+          </Link>
+        </p>
       </div>
     </AuthShell>
   );
