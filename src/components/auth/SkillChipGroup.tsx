@@ -1,6 +1,13 @@
 import { cn } from "@/lib/utils";
 
-export type Skill = "harvesting" | "sowing" | "ploughing" | "machine_operator" | "loading";
+export type Skill =
+  | "harvesting"
+  | "sowing"
+  | "ploughing"
+  | "machine_operator"
+  | "loading"
+  | "pesticide_spraying"
+  | "tractor_driving";
 
 interface Props {
   options: { value: Skill; label: string }[];
