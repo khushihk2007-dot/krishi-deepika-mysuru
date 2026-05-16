@@ -405,6 +405,42 @@ const Index = () => {
               </section>
               {selectedCrop && <Card title={language === "kn" ? "ರಫ್ತು ಪರಿಶೀಲನಾ ಪಟ್ಟಿ" : "Export checklist"} icon={selectedCrop[language].icon}><div className="space-y-3 text-sm font-bold"><p><span className="text-primary">{language === "kn" ? "ಪ್ರಮಾಣಪತ್ರಗಳು" : "Certifications"}: </span>APEDA, FSSAI, Phytosanitary, {selectedCrop[language].tag}</p><p><span className="text-primary">{language === "kn" ? "ಪ್ಯಾಕಿಂಗ್" : "Packaging"}: </span>{language === "kn" ? "ಗ್ರೇಡಿಂಗ್, ತೇವಾಂಶ ನಿಯಂತ್ರಣ, ರಫ್ತು ಲೇಬಲ್" : "Grading, moisture control, export labels and ventilated cartons."}</p><ol className="list-decimal space-y-1 pl-5 text-muted-foreground"><li>{language === "kn" ? "ಖರೀದಿದಾರರನ್ನು ದೃಢೀಕರಿಸಿ" : "Confirm buyer and target market"}</li><li>{language === "kn" ? "ಗುಣಮಟ್ಟ ಪರೀಕ್ಷೆ ಮಾಡಿ" : "Complete quality testing"}</li><li>{language === "kn" ? "ದಾಖಲೆ ಮತ್ತು ಶಿಪ್ಪಿಂಗ್ ಬುಕ್ ಮಾಡಿ" : "Prepare documents and book shipment"}</li></ol></div></Card>}
             </div>
+          ) : farmerTab === "fpo" ? (
+            <div className="space-y-4">
+              <div className="rounded-[1.5rem] border border-glass-border bg-card/90 p-4 shadow-control backdrop-blur-panel">
+                <div className="mb-3 flex flex-wrap items-center justify-between gap-3">
+                  <div className="flex items-center gap-2"><span className="text-2xl">🏢</span><h2 className="font-display text-lg font-black">{t.fpo}</h2><span className="rounded-full bg-secondary/45 px-3 py-1 text-xs font-black text-primary">{filteredFpos.length}</span></div>
+                  <label className="relative w-full max-w-sm"><Search className="absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" /><input value={fpoSearch} onChange={(e) => setFpoSearch(e.target.value)} placeholder={language === "kn" ? "ಜಿಲ್ಲೆ, ಬೆಳೆ, FPO ಹೆಸರು..." : "Search district, crop, FPO name..."} className="h-11 w-full rounded-full border border-input bg-background pl-10 pr-4 text-sm font-bold outline-none focus:ring-2 focus:ring-ring" /></label>
+                </div>
+                <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
+                  {filteredFpos.map((fpo) => {
+                    const f = fpo[fpoLang];
+                    return (
+                      <article key={fpo.fpo_id} className="flex flex-col rounded-[1.25rem] border border-glass-border bg-secondary/25 p-4 shadow-control">
+                        <div className="mb-3 flex items-start justify-between gap-3">
+                          <span className="inline-flex rounded-full bg-accent/35 px-3 py-1 text-xs font-black text-accent-foreground">{fpo.promoter}</span>
+                          <span className="text-xs font-black text-muted-foreground">{fpo.fpo_id}</span>
+                        </div>
+                        <h3 className="font-display text-base font-black leading-tight">{f.fpo_name}</h3>
+                        <p className="mt-1 text-xs font-black uppercase text-muted-foreground">{fpo.district} · {fpo.location}</p>
+                        <p className="mt-3 flex items-start gap-2 text-sm font-bold text-muted-foreground"><MapPin className="mt-0.5 size-4 shrink-0 text-primary" />{f.address}</p>
+                        <p className="mt-3 text-sm font-bold"><span className="text-primary">CEO: </span>{f.ceo_name}</p>
+                        <div className="mt-3 flex flex-wrap gap-2">
+                          {f.crops_handled.map((c) => <span key={c} className="inline-flex rounded-full bg-card px-3 py-1 text-xs font-black text-primary shadow-control">{c}</span>)}
+                        </div>
+                        <div className="mt-4 grid grid-cols-2 gap-2">
+                          <a href={`tel:${fpo.contact.phone}`} className="inline-flex h-10 items-center justify-center gap-2 rounded-full bg-primary px-3 text-sm font-black text-primary-foreground shadow-control transition-transform hover:-translate-y-0.5"><Phone className="size-4" />{fpo.contact.phone}</a>
+                          <a href={`mailto:${fpo.contact.email}`} className="inline-flex h-10 items-center justify-center gap-2 rounded-full bg-card px-3 text-sm font-black text-primary shadow-control transition-transform hover:-translate-y-0.5 truncate" title={fpo.contact.email}><span className="truncate">{language === "kn" ? "ಇಮೇಲ್" : "Email"}</span></a>
+                        </div>
+                      </article>
+                    );
+                  })}
+                  {filteredFpos.length === 0 && (
+                    <p className="col-span-full rounded-2xl border border-dashed border-glass-border bg-card/60 p-6 text-center text-sm font-bold text-muted-foreground">{language === "kn" ? "ಯಾವುದೇ FPO ಸಿಗಲಿಲ್ಲ" : "No FPOs match your search."}</p>
+                  )}
+                </div>
+              </div>
+            </div>
           ) : (
             <div className="grid gap-4 lg:grid-cols-3"><Card title={t.climate} icon="☀️"><div className="space-y-3 font-bold"><p><CloudSun className="mr-2 inline size-5 text-primary" /> 28-35°C · Rain risk low</p><p className="rounded-2xl bg-accent/35 p-3">{t.best}: Ginger 🫚</p><p className="text-muted-foreground">Best sowing window: 12 days</p></div></Card><Card title={t.market} icon="💰"><div className="h-28"><ResponsiveContainer width="100%" height="100%"><AreaChart data={priceTrend}><Area dataKey="v" type="monotone" stroke="hsl(var(--primary))" fill="hsl(var(--secondary))" strokeWidth={3} /></AreaChart></ResponsiveContainer></div><p className="mt-2 font-black text-primary">{t.sellNow}: 6 days</p></Card><Card title={t.direct} icon="🤝"><Button variant="field" className="w-full rounded-full" onClick={() => goFarmerTab("sell")}><Package />Sell Crop</Button><Button variant="secondaryFarm" className="mt-3 w-full rounded-full"><Phone />Buyer Chat / Call</Button></Card><Card title={t.demand} icon="🌍"><p className="font-bold text-muted-foreground">{language === "kn" ? "ವಿದೇಶಿ ಬೇಡಿಕೆ, ಲಾಭ ಮತ್ತು ಖರೀದಿದಾರ ಸಂಪರ್ಕಕ್ಕಾಗಿ ಪ್ರತ್ಯೇಕ ರಫ್ತು ವಿಭಾಗ." : "A dedicated export section for abroad demand, profit signals and buyer connections."}</p><Button variant="field" className="mt-4 w-full rounded-full" onClick={() => goFarmerTab("export")}><Package />Export</Button></Card><Card title={t.fpo} icon="🏢"><p className="font-bold text-muted-foreground">Group selling gives better price and bulk export opportunities.</p><Button variant="secondaryFarm" className="mt-4 w-full rounded-full" onClick={() => goFarmerTab("fpo")}><Users />Join FPO</Button></Card><Card title={t.labour} icon="🧑‍🌾"><p className="font-black">Need 5 workers for harvest</p><p className="text-sm font-bold text-muted-foreground">Ratings enabled · Nearby labourers</p><Button variant="field" className="mt-4 w-full rounded-full" onClick={() => goFarmerTab("labour")}><Briefcase />Post Job</Button></Card><Card title={t.schemes} icon="🏦"><p className="font-bold">Subsidies · Loans · Eligibility checker</p><Button variant="secondaryFarm" className="mt-4 w-full rounded-full" onClick={() => goFarmerTab("schemes")}>{t.apply}</Button></Card></div>
           )}
