@@ -159,6 +159,13 @@ const Index = () => {
   const otpRefs = useRef<Array<HTMLInputElement | null>>([]);
   const [resendTimer, setResendTimer] = useState(60);
   const [farmerProfile, setFarmerProfile] = useState({ name: "", district: "Mysuru", crop: "Tomato", fid: "" });
+  const [fpoSearch, setFpoSearch] = useState("");
+  const fpoLang: "en" | "kn" = language === "kn" ? "kn" : "en";
+  const filteredFpos = useMemo(() => {
+    const q = fpoSearch.trim().toLowerCase();
+    if (!q) return fpos;
+    return fpos.filter((f) => [f.district, f.location, f.promoter, f[fpoLang].fpo_name, ...f[fpoLang].crops_handled].join(" ").toLowerCase().includes(q));
+  }, [fpoSearch, fpoLang]);
   const selectedRegion = regions[selectedId];
   const selectedContent = getRegionContent(selectedRegion, selectedId, language);
   const t = copy[language];
