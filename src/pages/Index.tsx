@@ -6,6 +6,7 @@ import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, 
 import { FieldIntelligencePanel } from "@/components/FieldIntelligencePanel";
 import { KrishiMap } from "@/components/KrishiMap";
 import { getRegionContent, Language, RegionId, regions } from "@/data/krishiMysuru";
+import { fpos } from "@/data/fpos";
 
 type Role = "home" | "farmer" | "buyer" | "labourer" | "farmerAuth" | "farmerProfile";
 type FarmerTab = "overview" | "field" | "export" | "market" | "sell" | "fpo" | "labour" | "schemes";
