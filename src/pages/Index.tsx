@@ -8,7 +8,8 @@ import { KrishiMap } from "@/components/KrishiMap";
 import { getRegionContent, Language, RegionId, regions } from "@/data/krishiMysuru";
 import { fpos } from "@/data/fpos";
 
-type Role = "home" | "farmer" | "buyer" | "labourer" | "farmerAuth" | "farmerProfile";
+type AuthRole = "farmer" | "buyer" | "labourer";
+type Role = "home" | "farmer" | "buyer" | "labourer" | "farmerAuth" | "buyerAuth" | "labourerAuth" | "farmerProfile";
 type FarmerTab = "overview" | "field" | "export" | "market" | "sell" | "fpo" | "labour" | "schemes";
 type ViewState = { role: Role; farmerTab: FarmerTab };
 type SchemeContent = { title: string; benefit: string; eligibility: string; description: string; tag: string; icon: string };
