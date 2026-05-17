@@ -311,9 +311,9 @@ const Index = () => {
 
   const roleButtons = (
     <div className="grid gap-3 sm:grid-cols-3">
-      <Button variant="field" className="h-14 rounded-full text-base font-black" onClick={startFarmerLogin}><Sprout />{t.farmer}</Button>
-      <Button variant="secondaryFarm" className="h-14 rounded-full text-base font-black" onClick={() => navigateTo("buyer")}><ShoppingCart />{t.buyer}</Button>
-      <Button variant="secondaryFarm" className="h-14 rounded-full text-base font-black" onClick={() => navigateTo("labourer")}><Briefcase />{t.labourer}</Button>
+      <Button variant="field" className="h-14 rounded-full text-base font-black" onClick={() => startLogin("farmer")}><Sprout />{t.farmer}</Button>
+      <Button variant="secondaryFarm" className="h-14 rounded-full text-base font-black" onClick={() => startLogin("buyer")}><ShoppingCart />{t.buyer}</Button>
+      <Button variant="secondaryFarm" className="h-14 rounded-full text-base font-black" onClick={() => startLogin("labourer")}><Briefcase />{t.labourer}</Button>
     </div>
   );
 
