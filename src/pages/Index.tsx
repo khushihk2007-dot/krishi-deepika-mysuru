@@ -8,7 +8,8 @@ import { KrishiMap } from "@/components/KrishiMap";
 import { getRegionContent, Language, RegionId, regions } from "@/data/krishiMysuru";
 import { fpos } from "@/data/fpos";
 
-type Role = "home" | "farmer" | "buyer" | "labourer" | "farmerAuth" | "farmerProfile";
+type AuthRole = "farmer" | "buyer" | "labourer";
+type Role = "home" | "farmer" | "buyer" | "labourer" | "farmerAuth" | "buyerAuth" | "labourerAuth" | "farmerProfile";
 type FarmerTab = "overview" | "field" | "export" | "market" | "sell" | "fpo" | "labour" | "schemes";
 type ViewState = { role: Role; farmerTab: FarmerTab };
 type SchemeContent = { title: string; benefit: string; eligibility: string; description: string; tag: string; icon: string };
@@ -86,6 +87,18 @@ const loginLabels = {
   hi: { title: "किसान लॉगिन", welcome: "वापसी पर स्वागत है, किसान", subtitle: "अपनी स्मार्ट फार्म जानकारी देखें", phonePlaceholder: "10 अंकों का मोबाइल नंबर डालें", aadhaarLogin: "आधार नंबर से लॉगिन", btnRequest: "OTP भेजें", btnVerify: "सत्यापित करें", resend: "OTP फिर भेजें", newMember: "नए किसान? खाता बनाएँ", registerTitle: "किसान खाता बनाएँ", fullName: "पूरा नाम", district: "जिला", crop: "मुख्य फसल", fid: "अपना FID (Farmer ID) लिंक करें", register: "रजिस्टर करें", secureNote: "आपका डेटा सुरक्षित है", profile: "किसान प्रोफाइल", dashboard: "किसान डैशबोर्ड खोलें", logout: "लॉगआउट" },
 } as const;
 
+const buyerLoginLabels = {
+  en: { title: "Buyer Login", welcome: "Welcome back, Buyer", subtitle: "Source crops directly from verified farmers", phonePlaceholder: "Enter 10-digit mobile number", aadhaarLogin: "Login with GSTIN", btnRequest: "Send OTP", btnVerify: "Verify & Enter", resend: "Resend OTP", newMember: "New Buyer? Create Account", registerTitle: "Create Buyer Account", fullName: "Full Name", district: "District", company: "Company / Business Name", gstin: "GSTIN (optional)", register: "Register & Verify", secureNote: "Your data is secured by 256-bit encryption", profile: "Buyer Profile", dashboard: "Enter Buyer Dashboard", logout: "Logout" },
+  kn: { title: "ಖರೀದಿದಾರರ ಲಾಗಿನ್", welcome: "ಮತ್ತೆ ಸ್ವಾಗತ, ಖರೀದಿದಾರರೆ", subtitle: "ಪರಿಶೀಲಿತ ರೈತರಿಂದ ನೇರವಾಗಿ ಬೆಳೆಗಳನ್ನು ಖರೀದಿಸಿ", phonePlaceholder: "10-ಅಂಕಿಯ ಮೊಬೈಲ್ ಸಂಖ್ಯೆ ನಮೂದಿಸಿ", aadhaarLogin: "GSTIN ಯಿಂದ ಲಾಗಿನ್", btnRequest: "OTP ಕಳುಹಿಸಿ", btnVerify: "ಪರಿಶೀಲಿಸಿ", resend: "OTP ಮತ್ತೆ ಕಳುಹಿಸಿ", newMember: "ಹೊಸ ಖರೀದಿದಾರರೇ? ಖಾತೆ ರಚಿಸಿ", registerTitle: "ಖರೀದಿದಾರ ಖಾತೆ ರಚಿಸಿ", fullName: "ಪೂರ್ಣ ಹೆಸರು", district: "ಜಿಲ್ಲೆ", company: "ಕಂಪನಿ / ವ್ಯವಹಾರ ಹೆಸರು", gstin: "GSTIN (ಐಚ್ಛಿಕ)", register: "ನೋಂದಣಿ ಮಾಡಿ", secureNote: "ನಿಮ್ಮ ಡೇಟಾ ಸುರಕ್ಷಿತ", profile: "ಖರೀದಿದಾರ ಪ್ರೊಫೈಲ್", dashboard: "ಖರೀದಿದಾರ ಡ್ಯಾಶ್‌ಬೋರ್ಡ್‌ಗೆ ಹೋಗಿ", logout: "ಲಾಗೌಟ್" },
+  hi: { title: "खरीदार लॉगिन", welcome: "वापसी पर स्वागत है, खरीदार", subtitle: "सत्यापित किसानों से सीधे फसल खरीदें", phonePlaceholder: "10 अंकों का मोबाइल नंबर डालें", aadhaarLogin: "GSTIN से लॉगिन", btnRequest: "OTP भेजें", btnVerify: "सत्यापित करें", resend: "OTP फिर भेजें", newMember: "नए खरीदार? खाता बनाएँ", registerTitle: "खरीदार खाता बनाएँ", fullName: "पूरा नाम", district: "जिला", company: "कंपनी / व्यवसाय नाम", gstin: "GSTIN (वैकल्पिक)", register: "रजिस्टर करें", secureNote: "आपका डेटा सुरक्षित है", profile: "खरीदार प्रोफाइल", dashboard: "खरीदार डैशबोर्ड खोलें", logout: "लॉगआउट" },
+} as const;
+
+const labourerLoginLabels = {
+  en: { title: "Labourer Login", welcome: "Welcome back, Worker", subtitle: "Find verified daily wage work near you", phonePlaceholder: "Enter 10-digit mobile number", aadhaarLogin: "Login with Aadhaar Number", btnRequest: "Send OTP", btnVerify: "Verify & Enter", resend: "Resend OTP", newMember: "New Worker? Create Account", registerTitle: "Create Worker Account", fullName: "Full Name", district: "District", skills: "Skills (Harvesting, Sowing, Driver…)", experience: "Years of experience", register: "Register & Verify", secureNote: "Your data is secured by 256-bit encryption", profile: "Worker Profile", dashboard: "Find Nearby Work", logout: "Logout" },
+  kn: { title: "ಕಾರ್ಮಿಕರ ಲಾಗಿನ್", welcome: "ಮತ್ತೆ ಸ್ವಾಗತ", subtitle: "ನಿಮ್ಮ ಹತ್ತಿರದ ಪರಿಶೀಲಿತ ದಿನಗೂಲಿ ಕೆಲಸ ಹುಡುಕಿ", phonePlaceholder: "10-ಅಂಕಿಯ ಮೊಬೈಲ್ ಸಂಖ್ಯೆ ನಮೂದಿಸಿ", aadhaarLogin: "ಆಧಾರ್ ಸಂಖ್ಯೆಯಿಂದ ಲಾಗಿನ್", btnRequest: "OTP ಕಳುಹಿಸಿ", btnVerify: "ಪರಿಶೀಲಿಸಿ", resend: "OTP ಮತ್ತೆ ಕಳುಹಿಸಿ", newMember: "ಹೊಸ ಕಾರ್ಮಿಕರೇ? ಖಾತೆ ರಚಿಸಿ", registerTitle: "ಕಾರ್ಮಿಕ ಖಾತೆ ರಚಿಸಿ", fullName: "ಪೂರ್ಣ ಹೆಸರು", district: "ಜಿಲ್ಲೆ", skills: "ಕೌಶಲ್ಯಗಳು (ಕೊಯ್ಲು, ಬಿತ್ತನೆ…)", experience: "ಅನುಭವದ ವರ್ಷಗಳು", register: "ನೋಂದಣಿ ಮಾಡಿ", secureNote: "ನಿಮ್ಮ ಡೇಟಾ ಸುರಕ್ಷಿತ", profile: "ಕಾರ್ಮಿಕ ಪ್ರೊಫೈಲ್", dashboard: "ಹತ್ತಿರದ ಕೆಲಸ ಹುಡುಕಿ", logout: "ಲಾಗೌಟ್" },
+  hi: { title: "मजदूर लॉगिन", welcome: "वापसी पर स्वागत है", subtitle: "अपने पास सत्यापित दैनिक काम खोजें", phonePlaceholder: "10 अंकों का मोबाइल नंबर डालें", aadhaarLogin: "आधार नंबर से लॉगिन", btnRequest: "OTP भेजें", btnVerify: "सत्यापित करें", resend: "OTP फिर भेजें", newMember: "नए मजदूर? खाता बनाएँ", registerTitle: "मजदूर खाता बनाएँ", fullName: "पूरा नाम", district: "जिला", skills: "कौशल (कटाई, बुवाई, ड्राइवर…)", experience: "अनुभव (वर्ष)", register: "रजिस्टर करें", secureNote: "आपका डेटा सुरक्षित है", profile: "मजदूर प्रोफाइल", dashboard: "नज़दीकी काम खोजें", logout: "लॉगआउट" },
+} as const;
+
 const profileLabels = {
   en: { title: "Professional Farmer Profile", verified: "Verified Farmer", fid: "Unique Farmer ID", member: "Member Since", location: "Location", experience: "Experience", land: "Land Area", crops: "Primary Crops", soil: "Soil Health", gi: "GI-Tag Crop Highlight", rating: "Community Rating", achievements: "Achievements", portfolio: "Digital Farm Card", logout: "Logout", confirmTitle: "Are you sure you want to logout?", confirmBody: "Your secure farmer session will be cleared and you will return to role selection.", cancel: "Cancel", confirm: "Yes, logout" },
   kn: { title: "ವೃತ್ತಿಪರ ರೈತ ಪ್ರೊಫೈಲ್", verified: "ಪರಿಶೀಲಿಸಿದ ರೈತ", fid: "ವಿಶಿಷ್ಟ ರೈತ ಐಡಿ", member: "ಸದಸ್ಯರಾದ ವರ್ಷ", location: "ಸ್ಥಳ", experience: "ಅನುಭವ", land: "ಭೂಮಿ ವಿಸ್ತೀರ್ಣ", crops: "ಮುಖ್ಯ ಬೆಳೆಗಳು", soil: "ಮಣ್ಣಿನ ಆರೋಗ್ಯ", gi: "ಜಿಐ ಟ್ಯಾಗ್ ಬೆಳೆ ವಿಶೇಷತೆ", rating: "ಸಮುದಾಯ ರೇಟಿಂಗ್", achievements: "ಸಾಧನೆಗಳು", portfolio: "ಡಿಜಿಟಲ್ ಫಾರ್ಮ್ ಕಾರ್ಡ್", logout: "ಲಾಗ್ ಔಟ್", confirmTitle: "ನೀವು ಲಾಗ್ ಔಟ್ ಮಾಡಲು ಖಚಿತವಾಗಿ ಬಯಸುವಿರಾ?", confirmBody: "ನಿಮ್ಮ ಸುರಕ್ಷಿತ ರೈತ ಸೆಷನ್ ತೆರವುಗೊಳ್ಳುತ್ತದೆ ಮತ್ತು ಪಾತ್ರ ಆಯ್ಕೆ ಪುಟಕ್ಕೆ ಮರಳುತ್ತೀರಿ.", cancel: "ರದ್ದು", confirm: "ಹೌದು, ಲಾಗ್ ಔಟ್" },
@@ -159,6 +172,9 @@ const Index = () => {
   const otpRefs = useRef<Array<HTMLInputElement | null>>([]);
   const [resendTimer, setResendTimer] = useState(60);
   const [farmerProfile, setFarmerProfile] = useState({ name: "", district: "Mysuru", crop: "Tomato", fid: "" });
+  const [buyerProfile, setBuyerProfile] = useState({ name: "", district: "Mysuru", company: "", gstin: "" });
+  const [labourerProfile, setLabourerProfile] = useState({ name: "", district: "Mysuru", skills: "", experience: "" });
+  const [authRole, setAuthRole] = useState<AuthRole>("farmer");
   const [fpoSearch, setFpoSearch] = useState("");
   const fpoLang: "en" | "kn" = language === "kn" ? "kn" : "en";
   const filteredFpos = useMemo(() => {
@@ -170,8 +186,23 @@ const Index = () => {
   const selectedContent = getRegionContent(selectedRegion, selectedId, language);
   const t = copy[language];
   const labourLabels = labourCopy[language];
-  const login = loginLabels[language];
+  
   const profileText = profileLabels[language];
+
+  const login = (authRole === "buyer" ? buyerLoginLabels : authRole === "labourer" ? labourerLoginLabels : loginLabels)[language];
+  const authIcon = authRole === "buyer" ? "🛒" : authRole === "labourer" ? "👷" : "👨‍🌾";
+  const authFields: { key: string; label: string; profile: Record<string, string>; setter: (updater: (prev: any) => any) => void }[] =
+    authRole === "farmer"
+      ? [{ key: "name", label: login.fullName, profile: farmerProfile, setter: setFarmerProfile as any }, { key: "crop", label: (login as any).crop, profile: farmerProfile, setter: setFarmerProfile as any }, { key: "fid", label: (login as any).fid, profile: farmerProfile, setter: setFarmerProfile as any }]
+      : authRole === "buyer"
+      ? [{ key: "name", label: login.fullName, profile: buyerProfile, setter: setBuyerProfile as any }, { key: "company", label: (login as any).company, profile: buyerProfile, setter: setBuyerProfile as any }, { key: "gstin", label: (login as any).gstin, profile: buyerProfile, setter: setBuyerProfile as any }]
+      : [{ key: "name", label: login.fullName, profile: labourerProfile, setter: setLabourerProfile as any }, { key: "skills", label: (login as any).skills, profile: labourerProfile, setter: setLabourerProfile as any }, { key: "experience", label: (login as any).experience, profile: labourerProfile, setter: setLabourerProfile as any }];
+  const authDistrict = authRole === "farmer" ? farmerProfile.district : authRole === "buyer" ? buyerProfile.district : labourerProfile.district;
+  const setAuthDistrict = (d: string) => {
+    if (authRole === "farmer") setFarmerProfile((p) => ({ ...p, district: d }));
+    else if (authRole === "buyer") setBuyerProfile((p) => ({ ...p, district: d }));
+    else setLabourerProfile((p) => ({ ...p, district: d }));
+  };
 
   useEffect(() => {
     document.documentElement.classList.toggle("dark", theme === "dark");
@@ -186,7 +217,8 @@ const Index = () => {
 
   useEffect(() => {
     if (authStep !== "success") return;
-    const timer = window.setTimeout(() => navigateTo("farmerProfile"), 1300);
+    const dest: Role = authRole === "farmer" ? "farmerProfile" : authRole === "buyer" ? "buyer" : "labourer";
+    const timer = window.setTimeout(() => navigateTo(dest), 1300);
     return () => window.clearTimeout(timer);
   }, [authStep]);
 
@@ -226,9 +258,12 @@ const Index = () => {
     setHistory([]);
     setRole("home");
   };
-  const startFarmerLogin = () => {
+  const startLogin = (nextRole: AuthRole) => {
+    setAuthRole(nextRole);
     setAuthStep("phone");
-    navigateTo("farmerAuth");
+    setPhoneNumber("");
+    setOtp(Array(6).fill(""));
+    navigateTo(`${nextRole}Auth` as Role);
   };
 
   const setLanguage = (lng: Language) => {
@@ -276,9 +311,9 @@ const Index = () => {
 
   const roleButtons = (
     <div className="grid gap-3 sm:grid-cols-3">
-      <Button variant="field" className="h-14 rounded-full text-base font-black" onClick={startFarmerLogin}><Sprout />{t.farmer}</Button>
-      <Button variant="secondaryFarm" className="h-14 rounded-full text-base font-black" onClick={() => navigateTo("buyer")}><ShoppingCart />{t.buyer}</Button>
-      <Button variant="secondaryFarm" className="h-14 rounded-full text-base font-black" onClick={() => navigateTo("labourer")}><Briefcase />{t.labourer}</Button>
+      <Button variant="field" className="h-14 rounded-full text-base font-black" onClick={() => startLogin("farmer")}><Sprout />{t.farmer}</Button>
+      <Button variant="secondaryFarm" className="h-14 rounded-full text-base font-black" onClick={() => startLogin("buyer")}><ShoppingCart />{t.buyer}</Button>
+      <Button variant="secondaryFarm" className="h-14 rounded-full text-base font-black" onClick={() => startLogin("labourer")}><Briefcase />{t.labourer}</Button>
     </div>
   );
 
@@ -296,12 +331,12 @@ const Index = () => {
 
       {role === "home" && <section className="mx-auto grid max-w-7xl gap-6 px-4 py-6 md:grid-cols-[1.1fr_0.9fr] md:py-10"><div className="rounded-[2rem] border border-glass-border bg-gradient-to-br from-card via-secondary/45 to-background p-6 shadow-glass md:p-10"><div className="mb-5 inline-flex items-center gap-2 rounded-full bg-secondary/60 px-4 py-2 text-sm font-black"><Globe2 className="size-4" /> EN · ಕನ್ನಡ · हिंदी</div><h1 className="font-display text-4xl font-black leading-tight md:text-6xl">{t.hero}</h1><p className="mt-4 max-w-2xl text-lg font-semibold text-muted-foreground">{t.sub}</p><div className="mt-7">{roleButtons}</div></div><div className="grid gap-4">{t.stats.map((stat) => <Card key={stat} title={stat} icon="🌾"><p className="text-sm font-bold text-muted-foreground">Live demand signal for Mysuru farmers</p></Card>)}<Button variant="secondaryFarm" className="h-14 rounded-full text-base font-black"><Mic />{t.voice}</Button></div></section>}
 
-      {role === "farmerAuth" && (
+      {(role === "farmerAuth" || role === "buyerAuth" || role === "labourerAuth") && (
         <section className="relative mx-auto flex min-h-[calc(100svh-4.5rem)] max-w-7xl items-center justify-center overflow-hidden px-4 py-6">
           <div className="pointer-events-none absolute inset-0 flex items-center justify-center text-[18rem] opacity-[0.045] md:text-[28rem]">🌿</div>
           <div className="relative grid w-full max-w-5xl gap-4 md:grid-cols-[1fr_0.95fr]">
             <div className="rounded-[2rem] border border-glass-border bg-card/88 p-5 shadow-glass backdrop-blur-panel sm:p-7">
-              <div className="mb-5 flex items-center gap-3"><span className="flex size-14 items-center justify-center rounded-2xl bg-secondary/45 text-3xl shadow-control">👨‍🌾</span><div><p className="text-xs font-black uppercase text-muted-foreground">{login.title}</p><h1 className="font-display text-2xl font-black leading-tight sm:text-3xl">{authStep === "register" ? login.registerTitle : login.welcome}</h1><p className="mt-1 text-sm font-bold text-muted-foreground">{login.subtitle}</p></div></div>
+              <div className="mb-5 flex items-center gap-3"><span className="flex size-14 items-center justify-center rounded-2xl bg-secondary/45 text-3xl shadow-control">{authIcon}</span><div><p className="text-xs font-black uppercase text-muted-foreground">{login.title}</p><h1 className="font-display text-2xl font-black leading-tight sm:text-3xl">{authStep === "register" ? login.registerTitle : login.welcome}</h1><p className="mt-1 text-sm font-bold text-muted-foreground">{login.subtitle}</p></div></div>
               {authStep === "phone" && <div className="space-y-4"><label className="grid gap-2 text-sm font-black"><span>{login.phonePlaceholder}</span><div className="flex min-h-12 overflow-hidden rounded-2xl border border-input bg-background shadow-control"><span className="flex min-w-16 items-center justify-center border-r border-input text-base font-black text-primary">+91</span><input type="tel" inputMode="numeric" value={phoneNumber} onChange={(e) => setPhoneNumber(e.target.value.replace(/\D/g, "").slice(0, 10))} placeholder={login.phonePlaceholder} className="min-h-12 w-full bg-transparent px-4 text-base font-black outline-none" /></div></label><Button variant="field" className="min-h-12 w-full rounded-2xl text-base font-black" onClick={requestOtp} disabled={phoneNumber.length < 10}><Phone />{login.btnRequest}</Button><button className="w-full text-sm font-black text-primary underline-offset-4 hover:underline" onClick={requestOtp}>{login.aadhaarLogin}</button></div>}
               {authStep === "otp" && <div className="space-y-4"><div className="grid grid-cols-6 gap-2">{otp.map((digit, index) => <input key={index} ref={(node) => { otpRefs.current[index] = node; }} value={digit} onChange={(e) => updateOtp(index, e.target.value)} onKeyDown={(e) => handleOtpKeyDown(index, e)} inputMode="numeric" pattern="[0-9]*" autoComplete={index === 0 ? "one-time-code" : "off"} maxLength={1} aria-label={`OTP digit ${index + 1}`} className="aspect-square min-h-12 rounded-2xl border border-input bg-background text-center text-xl font-black outline-none focus:ring-2 focus:ring-ring" />)}</div><div className="flex items-center justify-between gap-3 rounded-2xl bg-secondary/30 p-3 text-sm font-black"><span>OTP · {phoneNumber ? `+91 ${phoneNumber}` : "Aadhaar"}</span><button disabled={resendTimer > 0} onClick={() => setResendTimer(60)} className="text-primary disabled:text-muted-foreground">{resendTimer > 0 ? `${resendTimer}s` : login.resend}</button></div><Button variant="field" className="min-h-12 w-full rounded-2xl text-base font-black" onClick={verifyOtp}><LockKeyhole />{login.btnVerify}</Button></div>}
               {authStep === "success" && <div className="flex min-h-56 flex-col items-center justify-center rounded-[1.5rem] bg-secondary/30 p-6 text-center"><div className="growing-plant text-7xl">🌱</div><p className="mt-5 font-display text-2xl font-black text-primary">{login.profile}</p></div>}
@@ -309,7 +344,13 @@ const Index = () => {
             </div>
             <form className="rounded-[2rem] border border-glass-border bg-card/72 p-5 shadow-control backdrop-blur-panel sm:p-7" onSubmit={(e) => { e.preventDefault(); setAuthStep("success"); }}>
               <h2 className="mb-4 font-display text-xl font-black">{login.registerTitle}</h2>
-              <div className="grid gap-3">{[["name", login.fullName], ["crop", login.crop], ["fid", login.fid]].map(([key, label]) => <label key={key} className="grid gap-2 text-sm font-black"><span>{label}</span><input value={farmerProfile[key as keyof typeof farmerProfile]} onChange={(e) => setFarmerProfile((profile) => ({ ...profile, [key]: e.target.value }))} className="min-h-12 rounded-2xl border border-input bg-background px-4 text-base font-bold outline-none focus:ring-2 focus:ring-ring" /></label>)}<label className="grid gap-2 text-sm font-black"><span>{login.district}</span><select value={farmerProfile.district} onChange={(e) => setFarmerProfile((profile) => ({ ...profile, district: e.target.value }))} className="min-h-12 rounded-2xl border border-input bg-background px-4 text-base font-bold outline-none focus:ring-2 focus:ring-ring"><option>Mysuru</option><option>Mandya</option><option>Chamarajanagar</option><option>Kodagu</option><option>Hassan</option></select></label><Button type="submit" variant="secondaryFarm" className="mt-2 min-h-12 rounded-2xl text-base font-black"><UserRound />{login.register}</Button></div>
+              <div className="grid gap-3">
+                {authFields.map((f) => (
+                  <label key={f.key} className="grid gap-2 text-sm font-black"><span>{f.label}</span><input value={f.profile[f.key] ?? ""} onChange={(e) => { const v = e.target.value; f.setter((prev: any) => ({ ...prev, [f.key]: v })); }} className="min-h-12 rounded-2xl border border-input bg-background px-4 text-base font-bold outline-none focus:ring-2 focus:ring-ring" /></label>
+                ))}
+                <label className="grid gap-2 text-sm font-black"><span>{login.district}</span><select value={authDistrict} onChange={(e) => setAuthDistrict(e.target.value)} className="min-h-12 rounded-2xl border border-input bg-background px-4 text-base font-bold outline-none focus:ring-2 focus:ring-ring"><option>Mysuru</option><option>Mandya</option><option>Chamarajanagar</option><option>Kodagu</option><option>Hassan</option></select></label>
+                <Button type="submit" variant="secondaryFarm" className="mt-2 min-h-12 rounded-2xl text-base font-black"><UserRound />{login.register}</Button>
+              </div>
             </form>
           </div>
         </section>
