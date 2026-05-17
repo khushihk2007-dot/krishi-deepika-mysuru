@@ -186,7 +186,7 @@ const Index = () => {
   const selectedContent = getRegionContent(selectedRegion, selectedId, language);
   const t = copy[language];
   const labourLabels = labourCopy[language];
-  const login = loginLabels[language];
+  
   const profileText = profileLabels[language];
 
   const login = (authRole === "buyer" ? buyerLoginLabels : authRole === "labourer" ? labourerLoginLabels : loginLabels)[language];
