@@ -172,6 +172,9 @@ const Index = () => {
   const otpRefs = useRef<Array<HTMLInputElement | null>>([]);
   const [resendTimer, setResendTimer] = useState(60);
   const [farmerProfile, setFarmerProfile] = useState({ name: "", district: "Mysuru", crop: "Tomato", fid: "" });
+  const [buyerProfile, setBuyerProfile] = useState({ name: "", district: "Mysuru", company: "", gstin: "" });
+  const [labourerProfile, setLabourerProfile] = useState({ name: "", district: "Mysuru", skills: "", experience: "" });
+  const [authRole, setAuthRole] = useState<AuthRole>("farmer");
   const [fpoSearch, setFpoSearch] = useState("");
   const fpoLang: "en" | "kn" = language === "kn" ? "kn" : "en";
   const filteredFpos = useMemo(() => {
