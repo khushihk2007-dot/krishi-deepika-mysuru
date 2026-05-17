@@ -189,6 +189,21 @@ const Index = () => {
   const login = loginLabels[language];
   const profileText = profileLabels[language];
 
+  const login = (authRole === "buyer" ? buyerLoginLabels : authRole === "labourer" ? labourerLoginLabels : loginLabels)[language];
+  const authIcon = authRole === "buyer" ? "🛒" : authRole === "labourer" ? "👷" : "👨‍🌾";
+  const authFields: { key: string; label: string; profile: Record<string, string>; setter: (updater: (prev: any) => any) => void }[] =
+    authRole === "farmer"
+      ? [{ key: "name", label: login.fullName, profile: farmerProfile, setter: setFarmerProfile as any }, { key: "crop", label: (login as any).crop, profile: farmerProfile, setter: setFarmerProfile as any }, { key: "fid", label: (login as any).fid, profile: farmerProfile, setter: setFarmerProfile as any }]
+      : authRole === "buyer"
+      ? [{ key: "name", label: login.fullName, profile: buyerProfile, setter: setBuyerProfile as any }, { key: "company", label: (login as any).company, profile: buyerProfile, setter: setBuyerProfile as any }, { key: "gstin", label: (login as any).gstin, profile: buyerProfile, setter: setBuyerProfile as any }]
+      : [{ key: "name", label: login.fullName, profile: labourerProfile, setter: setLabourerProfile as any }, { key: "skills", label: (login as any).skills, profile: labourerProfile, setter: setLabourerProfile as any }, { key: "experience", label: (login as any).experience, profile: labourerProfile, setter: setLabourerProfile as any }];
+  const authDistrict = authRole === "farmer" ? farmerProfile.district : authRole === "buyer" ? buyerProfile.district : labourerProfile.district;
+  const setAuthDistrict = (d: string) => {
+    if (authRole === "farmer") setFarmerProfile((p) => ({ ...p, district: d }));
+    else if (authRole === "buyer") setBuyerProfile((p) => ({ ...p, district: d }));
+    else setLabourerProfile((p) => ({ ...p, district: d }));
+  };
+
   useEffect(() => {
     document.documentElement.classList.toggle("dark", theme === "dark");
     localStorage.setItem("krishi-theme", theme);
