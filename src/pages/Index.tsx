@@ -258,9 +258,12 @@ const Index = () => {
     setHistory([]);
     setRole("home");
   };
-  const startFarmerLogin = () => {
+  const startLogin = (nextRole: AuthRole) => {
+    setAuthRole(nextRole);
     setAuthStep("phone");
-    navigateTo("farmerAuth");
+    setPhoneNumber("");
+    setOtp(Array(6).fill(""));
+    navigateTo(`${nextRole}Auth` as Role);
   };
 
   const setLanguage = (lng: Language) => {
