@@ -217,7 +217,8 @@ const Index = () => {
 
   useEffect(() => {
     if (authStep !== "success") return;
-    const timer = window.setTimeout(() => navigateTo("farmerProfile"), 1300);
+    const dest: Role = authRole === "farmer" ? "farmerProfile" : authRole === "buyer" ? "buyer" : "labourer";
+    const timer = window.setTimeout(() => navigateTo(dest), 1300);
     return () => window.clearTimeout(timer);
   }, [authStep]);
 
